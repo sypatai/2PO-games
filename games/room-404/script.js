@@ -217,9 +217,23 @@ function showOverview() {
   actionList.replaceChildren();
   updateProgress();
   if (state.room === "404") {
-    setStory("Тишина отвечает", "Воздух пахнет пылью и озоном. Перед тобой — дверь, окно, старое зеркало и терминал. Где-то в стене едва слышно потрескивает радио.", "Собери улики и открой терминал.");
-    makeAction("Проверить терминал", openTerminal, "primary-action", state.clues.size < 3);
-    if (state.clues.size < 3) addMessage(`Терминал ждёт. Найдено улик: ${state.clues.size} из 3.`);
+    if (!state.terminalSolved) {
+      setStory("Тишина отвечает", "Воздух пахнет пылью и озоном. Перед тобой — дверь, окно, старое зеркало и терминал. Где-то в стене едва слышно потрескивает радио.", "Собери улики и открой терминал.");
+      makeAction("Проверить терминал", openTerminal, "primary-action", state.clues.size < 3);
+      if (state.clues.size < 3) addMessage(`Терминал ждёт. Найдено улик: ${state.clues.size} из 3.`);
+    } else if (!state.radioSolved) {
+      setStory("Терминал разблокирован", "На экране горит ACCESS OK. Теперь настрой радио на частоту 87,6, указанную в записке.", "Следующий шаг — радио.");
+      makeAction("Настроить радио", openRadio, "primary-action");
+    } else {
+      setStory("Сигнал найден", state.signalFound
+        ? "Радио настроено, а скрытый знак найден. Дверь ведёт в архив 405."
+        : "Радио настроено. В окне мерцает скрытый знак: найди его, если хочешь открыть особую концовку. Можно сразу продолжить путь."
+      , state.signalFound ? "Переходи в архив 405." : "Скрытый знак необязателен — в архив можно идти сейчас.");
+      makeAction("Перейти в архив 405", () => enterRoom("405"), "primary-action");
+      if (!state.signalFound) {
+        makeAction("Исследовать знак в окне", () => inspect404("window"), "small-action");
+      }
+    }
   } else if (state.room === "405") {
     setStory("Архив забытых", state.signalFound
       ? "За дверью — архив с тысячами папок. На одной из них написано твоё имя, хотя оно зачёркнуто. Из динамика шепчет знакомый голос: «Не стирай меня снова»."
@@ -319,7 +333,9 @@ function inspectShadow() {
 function addClue(name) {
   if (state.clues.has(name)) {
     updateProgress();
-    if (state.clues.size === 3) makeAction("Проверить терминал", openTerminal, "primary-action");
+    if (state.clues.size === 3 && !state.terminalSolved) {
+      makeAction("Проверить терминал", openTerminal, "primary-action");
+    }
     return;
   }
   state.clues.add(name);
