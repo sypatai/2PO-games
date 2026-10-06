@@ -136,8 +136,10 @@ h1, h2, h3, p { margin-top: 0; }
 .hotspot-terminal { z-index: 9; bottom: 36%; left: 23%; width: 23%; height: 24%; }
 .hotspot-radio { z-index: 10; bottom: 16%; left: 43%; width: 12%; height: 13%; }
 .hotspot-door { top: 10%; right: 6%; width: 25%; height: 82%; }
-.hotspot-shadow { top: 27%; left: 22%; z-index: 11; width: 12px; height: 12px; border-radius: 50%; background: rgba(198, 245, 211, .18); box-shadow: 0 0 12px rgba(181, 244, 208, .7); animation: shadow-pulse 1.4s ease-in-out infinite; }
-.hotspot-shadow::after { width: 4px; height: 4px; }
+.hotspot-shadow { top: 29%; left: 20%; z-index: 11; display: grid; width: clamp(36px, 4vw, 46px); height: clamp(36px, 4vw, 46px); place-items: center; border: 1px solid rgba(198, 245, 211, .8); border-radius: 50%; background: rgba(31, 58, 47, .85); color: #d8ffe5; font-size: 19px; text-shadow: 0 0 10px var(--mint); box-shadow: 0 0 17px rgba(181, 244, 208, .75); animation: shadow-pulse 1.4s ease-in-out infinite; }
+.hotspot-shadow::before { position: absolute; top: calc(100% + 4px); left: 50%; padding: 3px 5px; border: 1px solid rgba(181, 244, 208, .55); background: rgba(16, 24, 21, .92); color: var(--mint); content: "ЗНАК"; font: 8px var(--mono); letter-spacing: .08em; transform: translateX(-50%); }
+.hotspot-shadow::after { display: none; }
+.hotspot-shadow span { line-height: 1; }
 .scene-label { position: absolute; z-index: 7; color: rgba(207, 220, 204, .49); font: 8px var(--mono); letter-spacing: .15em; pointer-events: none; }
 .scene-label-window { top: 59%; left: 16%; }.scene-label-door { top: 7%; right: 8%; }
 .scene-hint { position: absolute; z-index: 7; right: 11px; bottom: 10px; display: flex; align-items: center; gap: 7px; color: #9ba69e; font: 8px var(--mono); letter-spacing: .08em; pointer-events: none; }
