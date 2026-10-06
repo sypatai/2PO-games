@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101417">
+    <meta name="description" content="Комната 404 — интерактивная браузерная игра-головоломка о загадочном сигнале.">
+    <title>Комната 404 — последний сигнал</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Комната 404 — на главную">
+          <span class="brand-mark" aria-hidden="true">04</span>
+          <span>СТУДИЯ <b>ТИХИЙ ШУМ</b></span>
+        </a>
+        <div class="topbar-right">
+          <span class="edition">ИНТЕРАКТИВНАЯ ИСТОРИЯ <i></i></span>
+          <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false">
+            <span class="sound-icon" aria-hidden="true">♪</span>
+            <span id="sound-label">Звук выкл.</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="screen intro-screen" id="intro-screen" aria-labelledby="game-title">
+        <div class="intro-copy">
+          <p class="eyebrow"><span class="live-dot"></span> ДЕЛО № 0404 — НЕ РАСКРЫТО</p>
+          <h1 id="game-title">Комната<br><span>404</span></h1>
+          <p class="intro-subtitle">Последний сигнал</p>
+          <p class="intro-description">Ты очнулся в комнате, которой нет на плане здания. Часы замерли. За стеной кто-то называет твоё имя.</p>
+          <button class="primary-button" id="start-button" type="button">
+            <span>Начать игру</span><span aria-hidden="true">↗</span>
+          </button>
+          <p class="intro-note"><span>↳</span> Исследуй комнату. Каждая деталь может оказаться важной.</p>
+        </div>
+        <div class="intro-art" aria-hidden="true">
+          <div class="art-halo"></div>
+          <div class="art-window"><span></span><i></i><b></b></div>
+          <div class="art-clock">04<span>:</span>04</div>
+          <div class="art-door"><div class="art-door-number">404</div><i></i></div>
+          <div class="art-floor"></div>
+          <p class="art-caption">НИКТО НЕ ПОМНИТ, КАК ОНА ПОЯВИЛАСЬ</p>
+          <span class="art-coordinate">55° 45′ 08″ N<br>37° 36′ 56″ E</span>
+        </div>
+        <footer class="intro-footer"><span>ОДИНОЧНОЕ ПРОХОЖДЕНИЕ</span><span>≈ 5–10 МИНУТ</span><span>МОЖНО ИГРАТЬ С КЛАВИАТУРЫ</span></footer>
+      </section>
+
+      <section class="screen play-screen is-hidden" id="play-screen" aria-label="Игровая комната">
+        <div class="game-heading">
+          <div>
+            <p class="eyebrow"><span class="live-dot"></span> СЕАНС АКТИВЕН</p>
+            <h2 id="game-room-title">Комната <span>404</span></h2>
+          </div>
+          <button class="restart-button" id="restart-button" type="button" title="Начать прохождение заново">↻ <span>Сначала</span></button>
+        </div>
+
+        <div class="play-layout">
+          <section class="room-column" aria-label="Исследуйте комнату">
+            <div class="room-scene" id="room-scene" data-room="404">
+              <div class="archive-shelves" aria-hidden="true"><i></i><i></i><i></i></div>
+              <div class="server-racks" aria-hidden="true"><i></i><i></i><i></i></div>
+              <div class="switch-board" aria-hidden="true"><i></i><i></i><i></i></div>
+              <div class="endless-doors" aria-hidden="true"><i>ВЫХОД</i><i>ГОЛОС</i><i>ПАМЯТЬ</i></div>
+              <div class="paper-note" aria-hidden="true">04:04</div>
+              <div class="archive-photo" aria-hidden="true"><span></span><i></i></div>
+              <div class="room-glow"></div>
+              <div class="room-ceiling"></div>
+              <div class="room-wall"></div>
+              <div class="room-floor"></div>
+              <div class="window-frame room-object" aria-hidden="true"><div class="window-view"><span class="moon"></span><i class="star star-one"></i><i class="star star-two"></i><i class="star star-three"></i><i class="star star-four"></i></div><span class="window-cross-v"></span><span class="window-cross-h"></span></div>
+              <div class="desk room-object" aria-hidden="true"><div class="desk-top"></div><div class="desk-leg desk-leg-left"></div><div class="desk-leg desk-leg-right"></div><div class="desk-drawer"></div></div>
+              <div class="terminal room-object" aria-hidden="true"><div class="terminal-screen"><span>NO SIGNAL</span><i></i></div><div class="terminal-base"></div></div>
+              <div class="door room-object" id="door-art" aria-hidden="true"><span class="door-label">404</span><span class="door-handle"></span><span class="door-light"></span></div>
+              <div class="wall-clock room-object" aria-hidden="true"><span>04</span><i>:</i><span>04</span><b></b></div>
+              <div class="mirror room-object" aria-hidden="true"><span class="mirror-reflection"></span><i></i></div>
+              <div class="plant room-object" aria-hidden="true"><i class="leaf leaf-a"></i><i class="leaf leaf-b"></i><i class="leaf leaf-c"></i><span></span></div>
+              <div class="rug room-object" aria-hidden="true"></div>
+              <div class="room-grain" aria-hidden="true"></div>
+
+              <button class="hotspot hotspot-window" type="button" data-object="window" aria-label="Осмотреть окно" title="Окно"><span></span></button>
+              <button class="hotspot hotspot-clock" type="button" data-object="clock" aria-label="Осмотреть часы" title="Часы"><span></span></button>
+              <button class="hotspot hotspot-mirror" type="button" data-object="mirror" aria-label="Осмотреть зеркало" title="Зеркало"><span></span></button>
+              <button class="hotspot hotspot-note" type="button" data-object="note" aria-label="Прочитать записку на столе" title="Записка"><span></span></button>
+              <button class="hotspot hotspot-terminal" type="button" data-object="terminal" aria-label="Проверить терминал" title="Терминал"><span></span></button>
+              <button class="hotspot hotspot-radio" type="button" data-object="radio" aria-label="Настроить радио" title="Радио"><span></span></button>
+              <button class="hotspot hotspot-door" type="button" data-object="door" aria-label="Осмотреть дверь" title="Дверь"><span></span></button>
+              <button class="hotspot hotspot-shadow is-hidden" id="shadow-hotspot" type="button" data-object="shadow" aria-label="Исследовать мерцание в окне" title="Мерцание"><span></span></button>
+              <button class="hotspot hotspot-final hotspot-final-exit is-hidden" type="button" data-object="final-exit" aria-label="Выбрать дверь наружу" title="Выход"><span></span></button>
+              <button class="hotspot hotspot-final hotspot-final-voice is-hidden" type="button" data-object="final-voice" aria-label="Ответить голосу" title="Голос"><span></span></button>
+              <button class="hotspot hotspot-final hotspot-final-memory is-hidden" type="button" data-object="final-memory" aria-label="Восстановить память" title="Память"><span></span></button>
+              <span class="scene-label scene-label-window" id="scene-label-window">ОКНО</span>
+              <span class="scene-label scene-label-door" id="scene-label-door">ВЫХОД 404</span>
+              <div class="scene-hint" id="scene-hint"><span class="hint-key">КЛИК</span> ИССЛЕДУЙ ОБЪЕКТЫ</div>
+            </div>
+
+            <div class="progress-card">
+              <div class="progress-topline"><span id="chapter-label">ГЛАВА 01 <b>·</b> ПРОБУЖДЕНИЕ</span><span id="progress-label">0 / 3 УЛИКИ</span></div>
+              <div class="progress-track" role="progressbar" aria-label="Прогресс главы" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0" id="progress-bar"><span id="progress-fill"></span></div>
+              <div class="progress-bottom"><span id="objective-label">Найди зацепки в комнате</span><span id="mistake-count">ОШИБКИ: 0</span></div>
+            </div>
+          </section>
+
+          <aside class="story-panel" aria-label="Журнал расследования">
+            <div class="panel-top">
+              <span class="panel-icon" aria-hidden="true">⌁</span>
+              <div><p class="panel-kicker">ЖУРНАЛ НАБЛЮДЕНИЙ</p><h3 id="panel-title">Тишина отвечает</h3></div>
+            </div>
+            <div class="story-content" id="story-content" aria-live="polite" aria-atomic="true">
+              <p class="story-text" id="story-text">Воздух пахнет пылью и озоном. Перед тобой — дверь, окно, старое зеркало и терминал. Где-то в стене едва слышно потрескивает радио.</p>
+              <p class="story-prompt" id="story-prompt">С чего начнёшь?</p>
+              <div class="clue-list" id="clue-list" aria-label="Найденные улики"></div>
+              <div class="action-list" id="action-list"></div>
+            </div>
+            <div class="panel-footer"><span class="footer-pulse"></span><span id="system-status">СИСТЕМА ГОТОВА</span><span class="footer-id">R-404</span></div>
+          </aside>
+        </div>
+        <p class="keyboard-note"><kbd>Tab</kbd> выбрать объект <span>·</span> <kbd>Enter</kbd> взаимодействовать</p>
+      </section>
+
+      <section class="screen ending-screen is-hidden" id="ending-screen" aria-live="polite">
+        <div class="ending-mark" id="ending-mark" aria-hidden="true">✳</div>
+        <p class="eyebrow"><span class="live-dot"></span> ДЕЛО ЗАКРЫТО</p>
+        <h2 id="ending-title">Связь потеряна</h2>
+        <p class="ending-kicker" id="ending-kicker">КОНЦОВКА 01 · ТИШИНА</p>
+        <p class="ending-copy" id="ending-copy"></p>
+        <div class="ending-stats" id="ending-stats"></div>
+        <button class="primary-button" id="play-again-button" type="button"><span>Играть снова</span><span aria-hidden="true">↻</span></button>
+        <p class="ending-footnote">В другой раз прислушайся к помехам.</p>
+      </section>
+
+      <footer class="site-footer"><span>ТИХИЙ ШУМ <b>© 2026</b></span><span>ИСТОРИЯ МЕНЯЕТСЯ ОТ ТВОИХ РЕШЕНИЙ</span><span>ИНТЕРАКТИВНАЯ ИГРА <b>№ 04</b></span></footer>
+    </main>
+  </body>
+</html>
