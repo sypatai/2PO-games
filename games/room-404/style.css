@@ -34,6 +34,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--mint); outline-
 .edition, .sound-toggle { color: var(--muted); font: 10px var(--mono); letter-spacing: .08em; }
 .edition { display: flex; align-items: center; gap: 9px; }
 .edition i, .live-dot, .footer-pulse { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--mint-dark); box-shadow: 0 0 11px rgba(116, 203, 161, .6); }
+.catalog-link { display: inline-flex; min-height: 34px; align-items: center; gap: 7px; padding: 0 11px; border: 1px solid #627a6d; background: rgba(181, 244, 208, .08); color: var(--mint); text-decoration: none; font: 10px var(--mono); letter-spacing: .04em; transition: background .2s, border-color .2s; }
+.catalog-link:hover { border-color: var(--mint); background: rgba(181, 244, 208, .15); }
 .sound-toggle { display: inline-flex; align-items: center; gap: 8px; padding: 9px 11px; border: 1px solid var(--line); background: transparent; color: #bdc4bf; cursor: pointer; transition: border-color .2s, color .2s; }
 .sound-toggle:hover { border-color: #70847a; color: var(--mint); }
 .sound-icon { color: var(--mint); font-size: 15px; }
@@ -253,7 +255,8 @@ h1, h2, h3, p { margin-top: 0; }
 @media (max-width: 560px) {
   .game-shell { width: calc(100% - 28px); }
   .topbar { height: 63px; }
-  .topbar-right { gap: 8px; }
+  .topbar-right { gap: 7px; }
+  .catalog-link { min-height: 30px; padding: 0 7px; font-size: 8px; }
   .edition { display: none; }
   .brand { font-size: 8px; gap: 8px; }
   .brand-mark { width: 27px; height: 27px; }
