@@ -12,7 +12,7 @@
   <body>
     <main class="game-shell">
       <header class="topbar">
-        <a class="brand" href="#" aria-label="Комната 404 — на главную">
+        <a class="brand" href="../../index.html" aria-label="Вернуться в каталог игр">
           <span class="brand-mark" aria-hidden="true">04</span>
           <span>СТУДИЯ <b>ТИХИЙ ШУМ</b></span>
         </a>
@@ -54,7 +54,10 @@
             <p class="eyebrow"><span class="live-dot"></span> СЕАНС АКТИВЕН</p>
             <h2 id="game-room-title">Комната <span>404</span></h2>
           </div>
-          <button class="restart-button" id="restart-button" type="button" title="Начать прохождение заново">↻ <span>Сначала</span></button>
+          <div class="heading-controls">
+            <a class="menu-button" id="menu-button" href="../../index.html">← <span>К остальным играм</span></a>
+            <button class="restart-button" id="restart-button" type="button" title="Начать прохождение заново">↻ <span>Сначала</span></button>
+          </div>
         </div>
 
         <div class="play-layout">
@@ -127,6 +130,7 @@
         <p class="ending-kicker" id="ending-kicker">КОНЦОВКА 01 · ТИШИНА</p>
         <p class="ending-copy" id="ending-copy"></p>
         <div class="ending-stats" id="ending-stats"></div>
+        <a class="menu-button ending-menu-button" id="ending-menu-button" href="../../index.html">← <span>К остальным играм</span></a>
         <button class="primary-button" id="play-again-button" type="button"><span>Играть снова</span><span aria-hidden="true">↻</span></button>
         <p class="ending-footnote">В другой раз прислушайся к помехам.</p>
       </section>
