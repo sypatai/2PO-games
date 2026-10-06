@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#090b12" />
+    <meta
+      name="description"
+      content="Neon Dodge — мини-игра, в которой нужно собирать энергию и уклоняться от препятствий"
+    />
+    <title>Neon Dodge</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="topbar">
+        <a class="back-link" href="../../" aria-label="Вернуться в каталог игр">
+          <span aria-hidden="true">←</span> Каталог
+        </a>
+        <div class="logo">NEON<span>DODGE</span></div>
+        <button id="sound-button" class="icon-button" type="button" aria-label="Выключить звук">
+          <span aria-hidden="true">♪</span>
+        </button>
+      </header>
+
+      <section class="game-area" aria-labelledby="game-title">
+        <div class="game-copy">
+          <p class="eyebrow">Аркада · реакция</p>
+          <h1 id="game-title">Держись<br /><em>как можно дольше</em></h1>
+          <p class="instructions">
+            Собирай жёлтые импульсы и не касайся красных блоков.
+            Скорость постепенно растёт.
+          </p>
+
+          <dl class="stats" aria-label="Результаты игры">
+            <div>
+              <dt>Счёт</dt>
+              <dd id="score">000</dd>
+            </div>
+            <div>
+              <dt>Рекорд</dt>
+              <dd id="best-score">000</dd>
+            </div>
+          </dl>
+
+          <div class="desktop-controls">
+            <span><kbd>A</kbd><kbd>←</kbd> Влево</span>
+            <span><kbd>D</kbd><kbd>→</kbd> Вправо</span>
+          </div>
+        </div>
+
+        <div class="canvas-wrap">
+          <canvas id="game-canvas" width="720" height="900" aria-label="Игровое поле Neon Dodge"></canvas>
+
+          <div id="start-screen" class="overlay">
+            <p class="overlay-kicker">Готов к запуску?</p>
+            <h2>Не дай сигналу погаснуть</h2>
+            <button id="start-button" class="primary-button" type="button">Начать игру</button>
+            <p class="overlay-tip">Пробел тоже запускает игру</p>
+          </div>
+
+          <div id="game-over-screen" class="overlay" hidden>
+            <p class="overlay-kicker">Сигнал потерян</p>
+            <h2>Твой счёт: <span id="final-score">0</span></h2>
+            <button id="restart-button" class="primary-button" type="button">Ещё раз</button>
+            <p class="overlay-tip">Нажми пробел для новой попытки</p>
+          </div>
+
+          <div class="mobile-controls" aria-label="Управление игрой">
+            <button id="left-button" type="button" aria-label="Двигаться влево">←</button>
+            <button id="right-button" type="button" aria-label="Двигаться вправо">→</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./script.js" defer></script>
+  </body>
+</html>
