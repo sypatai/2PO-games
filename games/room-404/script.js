@@ -141,6 +141,16 @@ function updateRoomLook() {
   document.querySelectorAll(".hotspot-final").forEach((hotspot) => {
     hotspot.classList.toggle("is-hidden", !isFinal);
   });
+  document.querySelector(".hotspot-final-voice").setAttribute(
+    "aria-label",
+    state.signalFound ? "Ответить голосу и получить секретную концовку" : "Дверь голоса закрыта: найди скрытый знак в комнате 404"
+  );
+  document.querySelector(".hotspot-final-memory").setAttribute(
+    "aria-label",
+    state.signalFound && state.memoryChoice === "kept"
+      ? "Восстановить память и получить истинную концовку"
+      : "Дверь памяти закрыта: сохрани имя в архиве 405 и найди скрытый знак"
+  );
   systemStatus.textContent = is404 ? "СИСТЕМА ГОТОВА" : isArchive ? "АРХИВ ОТКРЫТ" : isServer ? state.powerRestored ? "ПИТАНИЕ ВОССТАНОВЛЕНО" : "НЕТ ПИТАНИЯ" : "ПОСЛЕДНИЙ ВЫБОР";
   document.querySelector("#scene-hint").innerHTML = isFinal
     ? '<span class="hint-key">КЛИК</span> ВЫБЕРИ ДВЕРЬ'
@@ -230,8 +240,17 @@ function showOverview() {
     makeAction("Выйти и забыть эту ночь", () => finishGame("ordinary"), "primary-action");
     if (state.signalFound) makeAction("Ответить голосу за стеной", () => finishGame("secret"), "warning-action");
     if (state.signalFound && state.memoryChoice === "kept") makeAction("Восстановить настоящее имя", () => finishGame("truth"), "truth-action");
-    if (!state.signalFound || state.memoryChoice !== "kept") {
-      addMessage("Некоторые двери молчат. Возможно, в комнатах остались важные улики.");
+    if (!state.signalFound) {
+      addMessage("Дверь голоса закрыта: найди скрытый знак у окна в комнате 404.");
+      makeAction("Вернуться в комнату 404 за знаком", () => enterRoom("404"), "small-action");
+    }
+    if (state.memoryChoice !== "kept") {
+      addMessage(state.memoryChoice === "erased"
+        ? "Дверь памяти не откроется: ты стёр своё имя. Решение необратимо."
+        : "Дверь памяти закрыта: сохрани своё имя в архиве 405 и найди скрытый знак.");
+      if (state.memoryChoice !== "erased") {
+        makeAction("Вернуться в архив 405", () => enterRoom("405"), "small-action");
+      }
     }
   }
 }
@@ -569,14 +588,30 @@ function inspect000(name) {
     if (state.signalFound) finishGame("secret");
     else {
       setStory("Дверь молчит", "Ты не нашёл скрытый сигнал в комнате 404. За этой дверью только помехи.", "Исследуй знак в окне в комнате 404 или выбери другой выход.");
-      makeAction("Вернуться к дверям", showOverview, "small-action");
+      makeAction("Вернуться в комнату 404 за знаком", () => enterRoom("404"), "primary-action");
+      makeAction("Остаться у дверей", showOverview, "small-action");
     }
     return;
   }
   if (name === "final-memory") {
     if (state.signalFound && state.memoryChoice === "kept") finishGame("truth");
     else {
-      setStory("Память не отвечает", "Для этой двери нужно сохранить своё имя в архиве 405 и найти скрытый знак в комнате 404.", "Ты можешь уйти или вернуться к исследованиям.");
+      const missingSignal = !state.signalFound;
+      const erasedMemory = state.memoryChoice === "erased";
+      setStory(
+        erasedMemory ? "Имя нельзя вернуть" : "Память не отвечает",
+        erasedMemory
+          ? "Ты стёр своё имя в архиве. Эта дверь останется закрытой до конца прохождения."
+          : "Для этой двери нужно сохранить своё имя в архиве 405 и найти скрытый знак в комнате 404.",
+        erasedMemory ? "Выбери одну из двух других дверей." : "Вернись за недостающей частью истории."
+      );
+      if (!erasedMemory) {
+        makeAction(
+          missingSignal ? "Вернуться в комнату 404 за знаком" : "Вернуться в архив 405 и сохранить имя",
+          () => enterRoom(missingSignal ? "404" : "405"),
+          "primary-action"
+        );
+      }
       makeAction("Вернуться к дверям", showOverview, "small-action");
     }
     return;
