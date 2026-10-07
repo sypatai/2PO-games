@@ -1,78 +1,44 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Little Bunny Café</title>
-
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Strawberry Café</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+<section id="cafe">
+  <canvas id="cafeCanvas"></canvas>
+  <div id="cafeUI">
+    <div class="order"><span>ЗАКАЗ</span><strong id="orderText"></strong></div>
+    <div class="shift">УТРЕННЯЯ СМЕНА</div>
+    <div class="hint">↑ ↓ ← → — движение &nbsp;&nbsp; E — взять / отдать</div>
+    <div class="visitors" id="visitorText"></div>
+    <div class="phaseText" id="phaseText">МИЛОЕ УТРО</div>
+  </div>
+  <div id="message"></div>
+</section>
 
-    <div class="game">
+<section id="basement">
+  <div id="crosshair">+</div>
+  <div id="basementHUD">
+    <div class="hudBox"><span>КЛЮЧИ</span><b id="keysText">0 / 4</b></div>
+    <div class="hudBox"><span>STAMINA</span><div class="stamina"><div id="staminaBar"></div></div></div>
+    <div class="hudBox"><span>ФОНАРИК</span><b id="flashlightText">ON [Q]</b></div>
+  </div>
+  <div id="basementHelp">WASD — движение<br>Shift — бег<br>Q — фонарик<br>E — шкаф<br>Клик — захват мыши</div>
+  <div id="hiddenMessage">ВЫ СПРЯТАЛИСЬ</div>
+</section>
 
-        <!-- Верхняя панель -->
-        <header class="top-bar">
-            <div id="day">День 1</div>
-            <div id="time">09:00</div>
-            <div id="money">💰 20</div>
-        </header>
+<div id="ending">
+  <div id="endingBox">
+    <h1 id="endingTitle"></h1>
+    <p id="endingText"></p>
+    <button onclick="location.reload()">ИГРАТЬ СНОВА</button>
+  </div>
+</div>
 
-
-        <!-- Само кафе -->
-        <main class="cafe">
-
-            <div class="cafe-name">
-                🐰 Little Bunny Café 🌸
-            </div>
-
-            <!-- Посетитель -->
-            <div id="customer" class="customer">
-                🐱
-            </div>
-
-            <!-- Реплика -->
-            <div class="dialogue">
-
-                <div id="customer-name" class="customer-name">
-                    Котёнок
-                </div>
-
-                <div id="dialogue-text">
-                    Мяу! Можно мне клубничный пирог? 🍓
-                </div>
-
-            </div>
-
-
-            <!-- Кнопки -->
-            <div id="choices" class="choices">
-
-                <button onclick="serveCake()">
-                    🍰 Дать пирог
-                </button>
-
-                <button onclick="talkToCustomer()">
-                    💬 Поговорить
-                </button>
-
-            </div>
-
-        </main>
-
-
-        <!-- Нижняя панель -->
-        <footer>
-            <span id="status">
-                Всё спокойно ♡
-            </span>
-        </footer>
-
-    </div>
-
-    <script src="script.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
