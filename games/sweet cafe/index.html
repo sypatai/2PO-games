@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Little Bunny Café</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="game">
+
+        <!-- Верхняя панель -->
+        <header class="top-bar">
+            <div id="day">День 1</div>
+            <div id="time">09:00</div>
+            <div id="money">💰 20</div>
+        </header>
+
+
+        <!-- Само кафе -->
+        <main class="cafe">
+
+            <div class="cafe-name">
+                🐰 Little Bunny Café 🌸
+            </div>
+
+            <!-- Посетитель -->
+            <div id="customer" class="customer">
+                🐱
+            </div>
+
+            <!-- Реплика -->
+            <div class="dialogue">
+
+                <div id="customer-name" class="customer-name">
+                    Котёнок
+                </div>
+
+                <div id="dialogue-text">
+                    Мяу! Можно мне клубничный пирог? 🍓
+                </div>
+
+            </div>
+
+
+            <!-- Кнопки -->
+            <div id="choices" class="choices">
+
+                <button onclick="serveCake()">
+                    🍰 Дать пирог
+                </button>
+
+                <button onclick="talkToCustomer()">
+                    💬 Поговорить
+                </button>
+
+            </div>
+
+        </main>
+
+
+        <!-- Нижняя панель -->
+        <footer>
+            <span id="status">
+                Всё спокойно ♡
+            </span>
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
