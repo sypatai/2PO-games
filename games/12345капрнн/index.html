@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дорога до колледжа</title>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Georgia,"Times New Roman",serif;background:#05060d;color:#e8e6f0}
+#app{max-width:820px;height:100%;margin:0 auto;display:flex;flex-direction:column;background:#0c0e1a;box-shadow:0 0 60px #000}
+#stage{flex:1;min-height:180px;position:relative;display:flex;align-items:center;justify-content:center;transition:background .6s;overflow:hidden}
+#stage::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.65) 100%);pointer-events:none}
+#scene{font-size:min(30vw,170px);filter:drop-shadow(0 8px 14px rgba(0,0,0,.6)) brightness(.85)}
+#sp{position:absolute;right:6%;bottom:-18px;font-size:min(22vw,110px);z-index:2;animation:pop .25s;filter:drop-shadow(0 0 12px rgba(0,0,0,.8))}
+@keyframes pop{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+#clock,#place{position:absolute;top:10px;z-index:3;background:rgba(5,6,13,.75);color:#e9c46a;padding:4px 10px;border-radius:4px;font-size:14px;border:1px solid rgba(233,196,106,.35)}
+#clock{left:12px}
+#place{right:12px;color:#c9c6dc;border-color:rgba(255,255,255,.2)}
+#box{background:rgba(8,9,18,.96);border-top:2px solid #e9c46a;padding:18px 18px 22px;min-height:230px;display:flex;flex-direction:column;gap:12px}
+#name{align-self:flex-start;background:#e9c46a;color:#0c0e1a;font-weight:700;padding:3px 14px;border-radius:4px;min-height:26px;letter-spacing:.5px}
+#name:empty{visibility:hidden}
+#txt{font-size:19px;line-height:1.55;min-height:84px;cursor:pointer;color:#f1eff8}
+#ch{display:flex;flex-direction:column;gap:8px}
+button{font:inherit;cursor:pointer}
+.opt{background:rgba(255,255,255,.06);color:#f1eff8;border:1px solid rgba(233,196,106,.45);border-radius:6px;padding:12px 14px;text-align:left;font-size:17px}
+.opt:hover,.opt:focus-visible{background:#e9c46a;color:#0c0e1a;outline:none}
+#hint{font-size:13px;opacity:.5;align-self:flex-end;font-style:italic}
+.menu{padding:28px 18px;overflow:auto;flex:1;background:radial-gradient(circle at 50% 0,#1d2144,#0c0e1a 70%)}
+.menu h1{margin:0 0 4px;font-size:32px;color:#e9c46a;font-weight:400;letter-spacing:1px}
+.menu p{margin:0 0 20px;color:#b9b6cf}
+.card{display:flex;gap:14px;align-items:center;width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(233,196,106,.4);border-radius:8px;padding:12px 14px;margin-bottom:12px;text-align:left;color:#e8e6f0}
+.card:hover,.card:focus-visible{background:rgba(233,196,106,.18);outline:none}
+.card .e{font-size:44px}
+.card b{font-size:20px;display:block;color:#e9c46a;font-weight:400}
+.card small{font-size:14px;color:#b9b6cf}
+.end{padding:22px 18px;background:#05060d;color:#e8e6f0;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;border-top:2px solid #e9c46a}
+.end h2{margin:0;font-size:28px;color:#e9c46a;font-weight:400}
+.end p{margin:0;font-size:18px;line-height:1.5;max-width:560px}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.btn{background:#e9c46a;color:#0c0e1a;border:0;border-radius:6px;padding:11px 16px;font-weight:700}
+.btn.alt{background:transparent;color:#e9c46a;border:1px solid #e9c46a}
+
+@keyframes fall{from{transform:translateY(-30px) rotate(0);opacity:0}15%{opacity:.8}to{transform:translateY(105vh) rotate(300deg);opacity:0}}
+@keyframes shk{0%,100%{transform:none}20%{transform:translate(-9px,5px)}40%{transform:translate(8px,-6px)}60%{transform:translate(-6px,-4px)}80%{transform:translate(5px,6px)}}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+.pt{position:absolute;top:0;z-index:1;pointer-events:none;animation:fall linear infinite}
+.dec{position:absolute;bottom:6px;z-index:1;opacity:.5;filter:brightness(.7);pointer-events:none}
+#stage.shake #scene{animation:shk .5s 2}
+#stage{animation:fin .7s}
+
+#cv{position:absolute;inset:0;width:100%;height:100%;animation:zm 40s linear forwards}
+@keyframes zm{to{transform:scale(1.1)}}
+@keyframes gr{to{background-position:60px 40px}}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9;opacity:.08;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");animation:gr .5s steps(3) infinite}
+#stage::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(#000 0 5%,transparent 5% 95%,#000 95%)}
+#stage::after{z-index:2}
+#clock,#place{z-index:4;top:calc(5% + 8px)}
+#sp{z-index:3;right:3%;bottom:0;width:min(34%,210px);font-size:0}
+#sp svg{width:100%;display:block;filter:drop-shadow(0 0 18px #000) brightness(.78) contrast(1.1)}
+.menu{padding:0;display:flex;flex-direction:column;background:#0c0e1a}
+.hd{flex:0 0 42%;min-height:230px;position:relative;overflow:hidden}
+.hd::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,#0c0e1a)}
+.ttl{position:absolute;left:18px;bottom:14px;z-index:3}
+.ttl small{color:#e9c46a;letter-spacing:2px;font-size:14px}
+.ttl h1{margin:2px 0 0;font-size:clamp(30px,8vw,48px);text-shadow:0 2px 14px #000}
+.list{padding:8px 18px 22px}
+.card{background:linear-gradient(90deg,rgba(255,255,255,.07),rgba(255,255,255,.02))}
+.card svg{width:54px;height:70px;border-radius:6px;background:linear-gradient(#2b3260,#10121f);flex:none}
+#snd{position:fixed;right:10px;bottom:10px;z-index:10;background:rgba(5,6,13,.8);color:#e9c46a;border:1px solid rgba(233,196,106,.5);border-radius:4px;padding:5px 10px;font-size:13px}
+.end{max-height:58%;overflow:auto}
+
+.tcard{position:absolute;z-index:5;left:50%;top:42%;transform:translate(-50%,-50%);font-size:clamp(22px,6vw,36px);letter-spacing:3px;color:#e9c46a;text-shadow:0 2px 14px #000;white-space:nowrap;opacity:0;animation:tc 2.6s ease forwards;pointer-events:none}
+@keyframes tc{0%{opacity:0;letter-spacing:12px}25%,70%{opacity:1;letter-spacing:3px}100%{opacity:0}}
+.wcap{position:absolute;z-index:5;left:50%;bottom:11%;transform:translateX(-50%);width:86%;text-align:center;font-size:19px;line-height:1.4;color:#f1eff8;text-shadow:0 2px 10px #000;animation:fin 1.4s}
+.wskip{position:absolute;right:12px;bottom:8px;z-index:5;font-size:12px;opacity:.5}
+@keyframes br{50%{transform:translateY(-3px) scale(1.012)}}
+#sp svg{animation:br 3.6s ease-in-out infinite;transform-origin:bottom}
+.opt{transition:transform .15s,background .15s}.opt:hover{transform:translateX(6px)}
+@media (prefers-reduced-motion:reduce){.tcard,.wcap,#sp svg{animation:none}.tcard{opacity:1}}
+@media (prefers-reduced-motion:reduce){.pt,#stage,#stage.shake #scene,#sp{animation:none}#stage{transition:none}}
+#sp svg{filter:drop-shadow(0 0 18px #000) brightness(.92) contrast(1.08)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ====== ДАННЫЕ ======
+var BG={home_a:['#2b2a4c','#7a4e6b','🏢','7:30','Дом Адлана'],home_i:['#3a2540','#a0566e','🏡','7:30','Дом Исмиры'],home_s:['#1c3a3a','#4d6b4a','🛖','7:30','Дом Сыпатая'],street:['#1e2a4a','#3e5a6e','🏙️','8:10','Улица'],park:['#10302a','#2d6a4f','🌳','8:10','Парк'],bus:['#20263a','#4a5670','🚌','8:10','Маршрутка'],college:['#23284d','#4a5fa8','🏫','8:30','Колледж'],taxi:['#3a2d14','#9a6a26','🚕','8:05','Такси'],yard:['#2e2418','#6a7a3a','🏘️','7:50','Дворы'],stop:['#1c2f3a','#4a5a9a','🚏','7:55','Остановка']};
+var SP={'Адлан':'🧑‍🎓','Полат':'😎','Исмира':'👩‍🎓','Айлин':'👧','Аялым':'👩‍🦰','Айым':'👱‍♀️','Сыпатай':'🧒','Староста':'🧐','Таксист':'👨‍✈️','Старичок':'👴','Девушка':'🙍‍♀️','Препод':'👨‍🏫'};
+var HEROES={a:['Адлан','🧑‍🎓','Ходит с другом Полатом. Ждать его или уйти?','a0'],i:['Исмира','👩‍🎓','Подруги, такси или пешком — и риск опоздать.','i0'],s:['Сыпатай','🧒','Идёт один: велосипед, автобус, самокат или дворы.','s0']};
+var S={};
+function sc(id,bg,lines,ch){S[id]={bg:bg,lines:lines,ch:ch}}
+function en(id,bg,title,text,icon){S[id]={bg:bg,end:1,title:title,text:text,icon:icon}}
+
+// --- АДЛАН ---
+sc('a0','home_a',['|Утро. Будильник орёт в третий раз, до пары в колледже, а она начинается в 8:30, остался час.','|Телефон вибрирует — пишет Полат.','Полат|Адлан, я проснулся! Подожди меня у подъезда, я выйду через пять минут.','Адлан|Твои «пять минут» меряют геологическими эпохами. За это время вымирали мамонты.','|Ты уже одет и стоишь у двери.'],[['Подождать Полата','a_wait'],['Уйти без него','a_go']]);
+sc('a_wait','street',['|Проходит пять минут. Потом десять.','Адлан|Полат, ты где?','Полат|Уже бегу! Только носок найду!','Адлан|Один носок найдёшь, второй потеряешь по дороге. Я тебя знаю.'],[['Подождать ещё','a_wait2'],['Сказать «догоняй» и уйти','a_go']]);
+sc('a_wait2','street',['|Из-за поворота выскакивает Полат: куртка нараспашку, волосы торчат в разные стороны, в зубах зажат кусок хлеба.','Полат|Всё, я тут! Побежали?','Адлан|У тебя носки разные.','Полат|Это стиль. Называется «авангард».','|Часы показывают 8:10. Пара в 8:30.'],[['Бежать на маршрутку','a_bus'],['Идти пешком через парк','a_park']]);
+sc('a_bus','bus',['|Маршрутка застряла позади трактора на Жибек Жолы. Водитель разводит руками.','Полат|Может, выйдем и побежим?','Адлан|Мы стоим так долго, что рядом уже начали строить дом.'],[['Выйти и бежать','e_a_run'],['Ждать, вдруг поедет','e_a_late']]);
+sc('a_park','park',['Полат|Адлан, ты лабораторную по программированию сделал? Дай списать, как всегда.','Адлан|Конечно сделал. А свою ты опять не открывал?','Полат|Открывал! Открыл и закрыл. Это считается?','Адлан|Это считается, как похороны: пришёл, постоял, ушёл.'],[['Дать списать','e_a_cheat'],['Объяснить тему по дороге','e_a_help']]);
+sc('a_go','street',['|Ты идёшь один. Через пару минут телефон вибрирует.','Полат|Серьёзно?! Я же сказал, что бегу…','Полат|Ты бросил меня, как мою лабораторную: на самом интересном месте.'],[['Ответить: «Встретимся на паре»','e_a_solo'],['Позвонить и извиниться','e_a_sorry']]);
+en('e_a_run','college','Спринтеры','Вы влетаете в аудиторию за секунду до препода. Полат падает на парту: «Адлан, я сейчас упаду». Но вы успели!','🏃');
+en('e_a_late','college','Опоздали вместе','Маршрутка дотащилась в 8:50. Препод посмотрел на вас и на часы. Зато было о чём поговорить в пробке.','🕘');
+en('e_a_cheat','college','Одинаковые ошибки','Препод сразу заметил две одинаковые ошибки в программах. Теперь вы оба пересдаёте, а отличникам это обидно вдвойне. Дружба крепкая, репутация — нет.','📝');
+en('e_a_help','college','Верный друг','Пока шли через парк, Адлан объяснил тему, и Полат впервые за месяц написал код сам. На паре он получил пятёрку, как и положено отличнику, и купил тебе шаурму.','🤝');
+en('e_a_solo','college','Сам по себе','Ты пришёл первым и занял лучшее место. Полат появился на третьей паре и три дня делал вид, что обижен.','🪑');
+en('e_a_sorry','college','Мир восстановлен','Полат вздохнул в трубку: «Ладно, в следующий раз жду я». Вы встретились у входа и вместе пошли на пару.','☮️');
+
+// --- ИСМИРА ---
+sc('i0','home_i',['|Исмира красит ресницы у зеркала. В чате девочек шумно.','Айлин|Выходим в 8:00 у остановки! Не опаздывай!','Аялым|Я возьму тебе булочку 🥐','Айым|А я возьму хорошее настроение. Бегом!','|А за окном как раз стоит свободное такси.'],[['Пойти с подругами','i_girls'],['Вызвать такси','i_taxi'],['Пойти пешком одной','i_walk']]);
+sc('i_girls','stop',['|У остановки возле больницы стоят три знакомые фигуры. Айлин машет рукой, Аялым что-то жуёт, а Айым уже достала телефон для первого кадра.','Айлин|Наконец-то! Автобус через две минуты.','Аялым|Рядом кофейня. Я бы выпила кофе…','Айым|А я бы сфоткалась на фоне рассвета!','Исмира|Девочки, пара через двадцать минут.'],[['Зайти за кофе','e_i_coffee'],['Сразу на автобус','i_girls2']]);
+sc('i_girls2','college',['|Вы вбегаете в колледж. У входа стоит строгая кураторша с журналом.','Куратор|Почему вы позже звонка на две минуты?'],[['Сказать правду','e_i_honest'],['Придумать отмазку','e_i_excuse']]);
+sc('i_taxi','taxi',['Таксист|Куда едем?','Исмира|В колледж, пожалуйста. Быстро.','Таксист|Быстро — это как в кино или по правилам?','Исмира|По правилам. Но если опоздаю, то как в кино.','Таксист|Тогда пристегнись. У меня три правила: не хлопать дверью, не плакать и не говорить «уже скоро».'],[['Поболтать с таксистом','e_i_chat'],['Уткнуться в телефон','e_i_phone']]);
+sc('i_walk','street',['|Исмира идёт пешком. На часах 8:10, пара в 8:30, а идти ещё двадцать пять минут.','Исмира|Ну всё, я опоздаю…','Исмира|А староста, между прочим, должна подавать пример. Пример: как красиво опаздывать.','Айым|Исмира, ты где? Мы заняли тебе место!'],[['Бежать изо всех сил','e_i_run'],['Идти спокойно и написать, что опоздаешь','e_i_calm']]);
+en('e_i_coffee','college','Весёлое опоздание','Кофе был отличный, фото тоже. На пару вы пришли в 8:45 с пластиковыми стаканчиками. Препод только вздохнул.','☕');
+en('e_i_honest','college','Честность — лучшая политика','Кураторша выслушала и записала только «замечание». Вы получили лёгкий выговор и уважение за честность.','📋');
+en('e_i_excuse','college','Отмазка не прошла','«Автобус сломался!» — сказала Исмира. Кураторша: «Я на нём приехала». Дежурство по аудитории на неделю на четверых.','🧹');
+en('e_i_chat','college','Семейные связи','Оказалось, таксист — дядя Айым! Он отвёз бесплатно и высадил прямо у входа. Ты пришла вовремя.','👨‍👧');
+en('e_i_phone','college','Королева такси','Ты приехала на десять минут раньше. Подруги пишут, что застряли у кофейни. Ты заняла им места и держала оборону.','👑');
+en('e_i_run','college','Пробежка на каблуках','Ты влетела в класс красная и запыхавшаяся. Опоздала на минуту, зато девочки зааплодировали.','👠');
+en('e_i_calm','college','Спокойно и с опозданием','Ты пришла на двадцать минут позже. Преподаватель принял извинение, а подруги сохранили конспект.','📓');
+
+// --- СЫПОТАЙ ---
+sc('s0','home_s',['|Сыпатай человек самостоятельный. Друзья ещё спят, а он уже на ногах.','Сыпатай|Сегодня иду один. Вопрос только — на чём?','Сыпатай|Варианты: ноги, надежда и чудо. Чудо сейчас в пробке.'],[['Велосипед','s_bike'],['Автобус','s_bus'],['Пешком дворами','s_walk'],['Самокат','s_scooter']]);
+sc('s_bike','street',['|Утро только начинается: над крышами висит туман, в соседнем дворе кукарекает петух, а с гор тянет холодом.','|Цепь звякает. Впереди развилка.','Сыпатай|По дороге короче, но там машины. Через парк дольше, зато красиво.'],[['По дороге','e_s_road'],['Через парк','s_park']]);
+sc('s_park','park',['|В парке на лавке сидит старичок с шахматами.','Старичок|Молодой человек, партию? Пять минут!'],[['Сыграть','e_s_chess'],['Вежливо отказаться','e_s_ride']]);
+sc('s_bus','bus',['|Автобус забит как банка с шпротами. Следующий через двенадцать минут.'],[['Втиснуться','e_s_crowd'],['Подождать следующий','s_wait']]);
+sc('s_wait','stop',['|На остановке стоит девушка с тубусом и вздыхает.','Девушка|Мой автобус тоже не пришёл. А мне на экзамен.'],[['Предложить такси на двоих','e_s_taxi'],['Пойти пешком','e_s_late']]);
+sc('s_walk','yard',['|Во дворах пахнет жареной картошкой. Вдруг из-за забора выскакивает огромная собака.','Сыпатай|Спокойно, спокойно…','Сыпатай|Это не паника. Это ускоренная версия спокойствия.'],[['Угостить печеньем','e_s_dog'],['Обойти стороной','s_walk2']]);
+sc('s_walk2','yard',['|Ты обходишь двор и попадаешь в тупик. Впереди невысокий забор.'],[['Перелезть через забор','e_s_fence'],['Вернуться назад','e_s_late']]);
+sc('s_scooter','street',['|Самокат летит как ветер. Впереди огромная лужа.'],[['Прыгнуть через лужу','e_s_jump'],['Объехать','e_s_ride']]);
+en('e_s_road','college','Быстро, но нервно','Ты приехал за 15 минут, но дважды чудом не попал под машину. Нервов хватит до конца недели.','🚦');
+en('e_s_chess','college','Шахматный гений','Ты выиграл партию за пять минут. Старичок оказался преподавателем колледжа. Он поставил тебе «отлично» вперёд.','♟️');
+en('e_s_ride','college','Идеальное утро','Ты приехал вовремя, в хорошем настроении, и ни с кем не поссорился. Редкий случай.','🌞');
+en('e_s_crowd','college','Консервы','Ты доехал, но тебя прижало к двери. Вышел помятый, с чужим зонтиком в рюкзаке. Вовремя, но странно.','☂️');
+en('e_s_taxi','college','Новая знакомая','В такси выяснилось, что вы идёте в один колледж, только она на втором курсе. Теперь есть с кем ходить на обед.','🤝');
+en('e_s_late','college','Опоздал, но живой','Ты опоздал на 25 минут, но принёс отличное оправдание и конспект друга.','🕘');
+en('e_s_dog','college','Друг на всю жизнь','Собака съела печенье и проводила тебя до угла. Теперь она каждое утро ждёт тебя у забора.','🐕');
+en('e_s_fence','college','Паркур','Ты перемахнул забор и приземлился в клумбе. В колледж пришёл с цветком в волосах и вовремя.','🌼');
+en('e_s_jump','college','Мокрый герой','Ты прыгнул, самокат остался в луже, а ты на другой стороне. Пара началась в мокрых кроссовках.','💦');
+
+
+// ====== РАСШИРЕНИЕ ИСТОРИИ ======
+function sk(){for(var i=0;i<arguments.length;i++)S[arguments[i]].shake=1}
+// --- Адлан ---
+sc('a0','home_a',['|Утро в Шамалгане. Будильник орёт в третий раз. За окном серо и моросит, где-то лает собака, а на улице Макатаева пахнет дымом из печных труб.','|Адлан натягивает куртку и пытается найти второй кроссовок. Пара в колледже в 8:30, а на часах уже 7:30.','Мама|Адлан, завтрак на столе! Хоть бутерброд возьми!','Адлан|Мам, некогда!','|Телефон вибрирует — пишет Полат.','Полат|Адлан, я проснулся! Подожди меня у подъезда, я выйду через пять минут.','Адлан|Твои «пять минут» меряют геологическими эпохами. За это время вымирали мамонты.','|Адлан знает, что у Полата «пять минут» могут растянуться на полчаса.'],[['Подождать Полата','a_wait'],['Уйти без него','a_go'],['Взять бутерброд и подождать','a_wait']]);
+SP['Мама']='👩';
+sc('a_wait2','street',['|Из-за поворота выскакивает Полат: куртка нараспашку, волосы торчат в разные стороны, в зубах зажат кусок хлеба.','Полат|Всё, я тут! Побежали?','Адлан|У тебя носки разные.','Полат|Это стиль. Называется «авангард».','|Он запыхался, шнурки не завязаны, а в руке — недоеденная булка.','|Часы показывают 8:10. Пара в 8:30.','Полат|У меня идея, но она тебе не понравится.'],[['Бежать на маршрутку','a_bus'],['Идти пешком через парк','a_park'],['Зайти в магазин за шаурмой','a_shop']]);
+sc('a_shop','street',['|В магазине у кассы очередь, пахнет свежей выпечкой.','Продавщица|Молодые люди, вам что-нибудь?','Полат|Две шаурмы! Нет, три!','Адлан|Три? Ты собрался завтракать или открывать филиал?','Адлан|Полат, мы опоздаем!','Полат|Давай хотя бы по одной возьмём. На голодную голову я всё равно ничего не запомню.','Адлан|Это не голова, это системный блок без питания.'],[['Купить и бежать','e_a_shawarma'],['Отказаться и тащить Полата за рукав','a_park']]);
+SP['Продавщица']='👩‍🍳';
+sc('a_park','park',['|В парке туман, на лужах плёнка льда. Под ногами хрустят листья.','Полат|Адлан, ты лабораторную по программированию сделал? Дай списать, как всегда.','Адлан|Конечно сделал. А свою ты опять не открывал?','Полат|Открывал! Открыл и закрыл. Это считается?','Адлан|Это считается, как похороны: пришёл, постоял, ушёл.','|Впереди развилка: по дорожке или напрямик через стройку.'],[['Дать списать на ходу','e_a_cheat'],['Объяснить тему по дороге','e_a_help'],['Срезать через стройку','a_site']]);
+sc('a_site','park',['|За забором стройка. Гудит экскаватор, лежат трубы.','Охранник|Эй, вы куда?! Здесь нельзя!','Полат|Бежим!!!'],[['Побежать за Полатом','e_a_site'],['Остановиться и извиниться','e_a_guard']]);
+SP['Охранник']='💂';
+sc('a_go','street',['|Адлан идёт один. На душе легко, но в телефоне ещё тише, чем обычно.','|Через пару минут телефон вибрирует.','Полат|Серьёзно?! Я же сказал, что бегу…','Полат|Ты бросил меня, как мою лабораторную: на самом интересном месте.','|Следом приходит ещё одно сообщение: фото брошенных кроссовок и подпись «я уже на улице».'],[['Ответить: «Встретимся на паре»','e_a_solo'],['Позвонить и извиниться','e_a_sorry'],['Вернуться за ним','a_wait2']]);
+sk('a_site','a_bus');
+en('e_a_shawarma','college','Сытые и довольные','Вы опоздали на десять минут, но с шаурмой. Препод учуял запах и забыл поставить пропуск. Полат даже поделился.','🌯');
+en('e_a_site','college','Беглецы со стройки','Вы перелезли через трубы и вылетели к колледжу. Полат потерял телефон, но нашёл его в кармане. Успели за минуту до звонка.','🏗️');
+en('e_a_guard','college','Вежливость города берёт','Охранник вздохнул и показал безопасную дорожку. Из-за этого вы опоздали на пять минут, зато с новым другом-охранником.','💂');
+// --- Исмира ---
+sc('i0','home_i',['|Исмира красит ресницы у зеркала. На подоконнике дремлет кот, а в окне серое утро. Дом стоит недалеко от сельской больницы, на тихой улице, где по утрам пахнет свежим хлебом.','Мама|Исмира, возьми шарф, на улице ветер!','Исмира|Хорошо, мам!','|В чате девочек шумно.','Айлин|Выходим в 8:00 у остановки! Не опаздывай!','Аялым|Я возьму тебе булочку 🥐','Айым|А я возьму хорошее настроение. Бегом!','|Пара в 8:30. А за окном как раз стоит свободное такси.'],[['Пойти с подругами','i_girls'],['Вызвать такси','i_taxi'],['Пойти пешком одной','i_walk']]);
+sc('i_girls','stop',['|У остановки возле больницы стоят три знакомые фигуры. Айлин машет рукой, Аялым что-то жуёт, а Айым уже достала телефон для первого кадра.','Айлин|Наконец-то! Автобус через две минуты.','Аялым|Рядом кофейня. Я бы выпила кофе…','Айым|А я бы сфоткалась на фоне рассвета! Смотрите, какой свет!','Исмира|Девочки, пара через двадцать минут.','Айлин|Ой, а у меня реферат не распечатан!'],[['Зайти за кофе','e_i_coffee'],['Сразу на автобус','i_girls2'],['Сделать общее фото','e_i_photo']]);
+sc('i_taxi','taxi',['Таксист|Куда едем?','Исмира|В колледж, пожалуйста. Быстро.','Таксист|Быстро — это как в кино или по правилам?','Исмира|По правилам. Но если опоздаю, то как в кино.','Таксист|Тогда пристегнись. У меня три правила: не хлопать дверью, не плакать и не говорить «уже скоро».','|За окном проплывают заборы, тополя и низкие дома. Тихо играет радио.'],[['Поболтать с таксистом','e_i_chat'],['Уткнуться в телефон','e_i_phone'],['Попросить заехать за подругами','i_taxi2']]);
+sc('i_taxi2','taxi',['|Такси тормозит у остановки. Три знакомые фигуры замирают.','Айлин|Исмира?!','Аялым|Ты на такси?! Предательница!','Айым|Подвези нас, пожалуйста! Мы тебе булочку отдадим!'],[['Посадить всех','e_i_squad'],['Сказать «увидимся на паре»','e_i_phone']]);
+sc('i_walk','street',['|Исмира идёт пешком. На часах 8:10, пара в 8:30, а идти ещё двадцать пять минут.','Исмира|Ну всё, я опоздаю…','Исмира|А староста, между прочим, должна подавать пример. Пример: как красиво опаздывать.','Айым|Исмира, ты где? Мы заняли тебе место!','|Мимо проезжает маршрутка, водитель машет рукой.'],[['Бежать изо всех сил','e_i_run'],['Идти спокойно и написать, что опоздаешь','e_i_calm'],['Запрыгнуть в маршрутку','e_i_bus']]);
+SP['Мама']='👩';
+en('e_i_photo','college','Фото года','Снимок получился идеальный, его даже репостнул колледж. На пару вы вошли в 8:40. Кураторша поставила пропуск, но фото повесила на стенд.','📸');
+en('e_i_squad','college','Все вместе','Таксист ехал, пока девочки делили булочку и сочиняли оправдание. Приехали вовремя и дружно сказали «здравствуйте».','🚕');
+en('e_i_bus','college','Приключение в маршрутке','Ты стояла на подножке, пока бабушка рассказывала про внуков. Приехала с пирожком и ещё одним другом. Опоздала на пять минут.','🥟');
+// --- Сыпатай ---
+sc('s0','home_s',['|Сыпатай живёт на западной окраине Шамалгана, недалеко от музея «Атамекен». С утра во дворе пахнет дымом и мокрой травой.','|Друзья ещё спят, а он уже во дворе. Рюкзак за плечом, шнурки завязаны. Пара в 8:30.','Сыпатай|Сегодня иду один. Вопрос только — на чём?','Сыпатай|Варианты: ноги, надежда и чудо. Чудо сейчас в пробке.','|В сарае стоят велосипед и самокат. А до остановки пять минут.'],[['Велосипед','s_bike'],['Автобус','s_bus'],['Пешком дворами','s_walk'],['Самокат','s_scooter']]);
+sc('s_bike','street',['|Утро только начинается: над крышами висит туман, в соседнем дворе кукарекает петух, а с гор тянет холодом.','|Цепь звякает. Впереди развилка.','Сыпатай|По дороге короче, но там машины. Через парк дольше, зато красиво. А ещё есть гаражи — самая короткая, но странная дорога.'],[['По дороге','e_s_road'],['Через парк','s_park'],['Через гаражи','s_garage']]);
+sc('s_garage','yard',['|Между гаражами узко, пахнет бензином. На стене кто-то нарисовал огромного дракона.','Сыпатай|Красиво… но тут ли поворот?'],[['Ехать прямо','e_s_garage'],['Свернуть налево','e_s_lost']]);
+sc('s_bus','bus',['|Автобус забит как банка с шпротами. Следующий через двенадцать минут.','|В салоне на сиденье у окна сидит бабушка с огромной сумкой. Она еле держится.'],[['Втиснуться','e_s_crowd'],['Подождать следующий','s_wait'],['Помочь бабушке с сумкой','e_s_granny']]);
+sc('s_scooter','street',['|Самокат летит как ветер. Впереди огромная лужа, а за ней — знакомая остановка.','|На ней стоит одноклассник и машет рукой: «Подвези!»'],[['Прыгнуть через лужу','e_s_jump'],['Объехать','e_s_ride'],['Затормозить и подвезти друга','e_s_friend']]);
+sc('s_walk','yard',['|Во дворах пахнет жареной картошкой. Из окна доносится радио.','|Вдруг из-за забора выскакивает огромная собака.','Сыпатай|Спокойно, спокойно…','Сыпатай|Это не паника. Это ускоренная версия спокойствия.'],[['Угостить печеньем','e_s_dog'],['Обойти стороной','s_walk2'],['Зайти в пекарню','e_s_bakery']]);
+sk('s_walk','s_scooter','s_garage');
+en('e_s_garage','college','Драконий путь','Ты проскочил гаражи и вылетел прямо к колледжу. Дракон на стене мигнул тебе глазом. Ты на месте за 12 минут.','🐉');
+en('e_s_lost','college','Лабиринт гаражей','Налево оказался тупик. Ты кружил сорок минут и пришёл к концу пары. Зато знаешь все гаражи района.','🧭');
+en('e_s_granny','college','Подарок от бабушки','Ты донёс сумку до остановки. Бабушка дала пирожок и пожелала хорошего дня. Ты опоздал на пять минут, но тебе улыбались.','👵');
+en('e_s_friend','college','Вдвоём на самокате','Вы мчались вдвоём, и друг кричал от восторга. Приехали раньше всех и растрёпанные.','🛴');
+en('e_s_bakery','college','Сладкое утро','Ты вышел из пекарни с пакетом булочек. Сторож в колледже получил одну и пустил тебя на пять минут позже.','🥐');
+
+// ====== ДВИЖОК ======
+
+var X={home_a:['🛋️ 📚 🪴 🕰️','✨'],home_i:['🪞 🧸 🌷 🎀','🌸'],home_s:['🪵 🐈 🧺 🎣','🍃'],street:['🚗 🚦 🏢 🚲','🌧️'],park:['🌲 🌳 🪑 🦆','🍂'],bus:['🧳 🪟 👵 🎒','💨'],college:['🚪 🪧 🎓 📚','✨'],taxi:['🛣️ 🌆 🚦 🎶','💨'],yard:['🧺 🐕 🚲 🌻','🍃'],stop:['🚏 ☂️ 🕰️ 🐦','🌧️']};
+for(var k in X)BG[k]=BG[k].concat(X[k]);
+function fx(st,b){
+  var d=cur.end?[]:(b[5]||'').split(' '),p=cur.end?cur.icon:b[6],i;
+  d.forEach(function(e,i){var n=el('span','dec',e);n.style.left=(6+i*22)+'%';n.style.fontSize=(30+(i*17)%28)+'px';st.appendChild(n)});
+  for(i=0;i<16&&p;i++){var n=el('span','pt',p);n.style.left=(i*6.3)%100+'%';n.style.fontSize=(13+(i*7)%14)+'px';n.style.animationDuration=(4+(i*3)%6)+'s';n.style.animationDelay=(-(i*5)%8)+'s';st.appendChild(n)}
+}
+var app=document.getElementById('app'),cur,li,typing,timer,hero;
+function store(){try{return JSON.parse(localStorage.getItem('collegeEnds')||'{}')}catch(e){return {}}}
+function save(id){try{var s=store();s[id]=1;localStorage.setItem('collegeEnds',JSON.stringify(s))}catch(e){}}
+function total(c){return Object.keys(S).filter(function(k){return k.indexOf('f_'+c+'_')==0}).length}
+function found(c){var s=store();return Object.keys(s).filter(function(k){return k.indexOf('f_'+c+'_')==0}).length}
+function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
+
+function menu(){
+  clearInterval(timer);app.innerHTML='';
+  var m=el('div','menu');
+  m.appendChild(el('h1',0,'Дорога до колледжа'));
+  m.appendChild(el('p',0,'Выбери героя. Твои решения определяют, как пройдёт утро.'));
+  Object.keys(HEROES).forEach(function(k){
+    var h=HEROES[k],b=el('button','card','<span class="e">'+h[1]+'</span><span><b>'+h[0]+'</b><small>'+h[2]+'<br>Концовки: '+found(k)+' / '+total(k)+'</small></span>');
+    b.onclick=function(){hero=k;go(h[3])};m.appendChild(b);
+  });
+  app.appendChild(m);
+}
+
+function go(id){
+  if(S[id].pick)return go(S[id].pick());
+  if(S[id].bg&&S[id].bg.indexOf('home')!=0&&lastBg.indexOf('home')==0&&!S[id].end){lastBg=S[id].bg;return walk(function(){go(id)})}
+  cur=Object.assign({},S[id],{id:id});cur.lines=(cur.lines||[]).map(function(l){var m=l.match(/^(!?)([a-z0-9]+)\?([\s\S]*)$/);if(!m)return l;return (!!G[m[2]])!==(m[1]=='!')?m[3]:null}).filter(function(l){return l!==null});li=0;lastBg=cur.bg;clearInterval(timer);app.innerHTML='';
+  var b=BG[cur.bg],st=el('div'),stage=el('div');stage.id='stage';
+  stage.style.background='linear-gradient(180deg,'+b[0]+','+b[1]+')';
+  stage.innerHTML='<div id="clock">'+(cur.end?(ARR[id]!=null?'8:30':'15:40'):(cur.tm||b[3]))+((cur.tm||id[0]=='f')?' · конец пар в 15:40':' · пара в 8:30')+'</div><div id="place">'+(PL[id]||b[4])+'</div><div id="sp"></div>';
+  stage.className=cur.shake?'shake':'';fx(stage,b);if(cur.card)stage.appendChild(el('div','tcard',cur.card));app.appendChild(stage);
+  if(cur.end){endScreen(id);return}
+  var box=el('div');box.id='box';
+  box.innerHTML='<div id="name"></div><div id="txt"></div><div id="ch"></div><div id="hint">нажми на текст, чтобы продолжить</div>';
+  app.appendChild(box);
+  document.getElementById('txt').onclick=advance;
+  line();
+}
+
+function line(){
+  var p=cur.lines[li].split('|'),who=p[0],text=p[1];
+  document.getElementById('name').textContent=who;
+  document.getElementById('sp').textContent=SP[who]||'';
+  document.getElementById('ch').innerHTML='';
+  var t=document.getElementById('txt'),i=0;typing=true;t.textContent='';
+  document.getElementById('hint').style.visibility='visible';
+  clearInterval(timer);
+  timer=setInterval(function(){i++;t.textContent=text.slice(0,i);if(i>=text.length)finish(text)},18);
+}
+function finish(text){
+  clearInterval(timer);typing=false;
+  document.getElementById('txt').textContent=text;
+  if(li>=cur.lines.length-1){
+    document.getElementById('hint').style.visibility='hidden';
+    var ch=document.getElementById('ch');
+    cur.ch.forEach(function(c){var b=el('button','opt',c[0]);b.onclick=function(){if(c[2])G[c[2]]=1;go(c[1])};ch.appendChild(b)});
+  }
+}
+function advance(){
+  var text=cur.lines[li].split('|')[1];
+  if(typing){finish(text);return}
+  if(li<cur.lines.length-1){li++;line()}
+}
+
+function endScreen(id){
+  save(id);
+  var e=el('div','end');
+  e.innerHTML='<h2>'+cur.title+'</h2><p>'+cur.text+'</p><p>Концовок найдено: '+found(hero)+' / '+total(hero)+'</p>';
+  var r=el('div','row'),a=el('button','btn','Сыграть ещё раз'),b=el('button','btn alt','В меню');
+  a.onclick=function(){go(HEROES[hero][3])};b.onclick=menu;
+  r.appendChild(a);r.appendChild(b);e.appendChild(r);app.appendChild(e);
+}
+
+// ====== РЕАЛИЗМ: рисованные сцены, туман, дождь, звук ======
+var raf,AC,gain,filt,snd=true,F=['Исмира','Айлин','Аялым','Айым','Мама','Продавщица','Девушка'];
+var KIND={home_a:'tower',home_i:'house',home_s:'house',street:'city',park:'trees',bus:'city',college:'college',taxi:'city',yard:'house',stop:'city'};
+var FXK={home_a:'dust',home_i:'dust',home_s:'leaf',street:'rain',park:'leaf',bus:'rain',college:'dust',taxi:'rain',yard:'leaf',stop:'rain'};
+function R(x){return function(){x=(x*16807)%2147483647;return x/2147483647}}
+function win(g,x,y,w,h,r,L){g.save();for(var yy=y+10;yy<y+h-6;yy+=14)for(var xx=x+6;xx<x+w-8;xx+=12)if(r()<.22-L*.05){g.fillStyle='rgba(255,'+(190+r()*50|0)+',110,'+(.5+r()*.4)+')';g.fillRect(xx,yy,5,7)}g.restore()}
+function mk(w,h,kind,c){var cr=kind=='crowd';if(cr)kind='college';
+  var o=document.createElement('canvas');o.width=w;o.height=h;
+  var g=o.getContext('2d'),r=R(w+kind.length*97),L,x,sk=g.createLinearGradient(0,0,0,h);
+  sk.addColorStop(0,c[0]);sk.addColorStop(1,c[1]);g.fillStyle=sk;g.fillRect(0,0,w,h);
+  var gl=g.createRadialGradient(w*.25,h*.35,0,w*.25,h*.35,h*.7);gl.addColorStop(0,'rgba(255,214,150,.35)');gl.addColorStop(1,'rgba(255,214,150,0)');g.fillStyle=gl;g.fillRect(0,0,w,h);
+  if(!IN.test(kind))mtn(g,w,h,r);
+  if(IN.test(kind))inter(g,w,h,kind,r);else for(L=0;L<3;L++){
+    var base=h*(.6+L*.1);g.fillStyle='rgba('+(14-L*4)+','+(16-L*4)+','+(28-L*7)+','+(.55+L*.22)+')';x=-10;
+    while(x<w){
+      if(kind=='trees'){var tw=30+r()*50,th=80+r()*140-L*20;g.beginPath();g.moveTo(x,base);g.lineTo(x+tw/2,base-th);g.lineTo(x+tw,base);g.fill();x+=tw*.6}
+      else if(kind=='house'){var bw=60+r()*70,bh=40+r()*50-L*8;g.fillRect(x,base-bh,bw,bh+h);g.beginPath();g.moveTo(x-6,base-bh);g.lineTo(x+bw/2,base-bh-30);g.lineTo(x+bw+6,base-bh);g.fill();win(g,x,base-bh,bw,bh,r,L);x+=bw+r()*20}
+      else if(kind=='village'){var q=r();if(q<.55){var vw=50+r()*50,vh=30+r()*30-L*5;g.fillRect(x,base-vh,vw,vh+h);g.beginPath();g.moveTo(x-5,base-vh);g.lineTo(x+vw/2,base-vh-22);g.lineTo(x+vw+5,base-vh);g.fill();win(g,x,base-vh,vw,vh,r,L);x+=vw+r()*30}else if(q<.85){var ph=90+r()*70-L*15;g.beginPath();g.ellipse(x+8,base-ph/2,8,ph/2,0,0,7);g.fill();x+=22+r()*20}else{g.fillRect(x,base-80,3,80);g.fillRect(x-12,base-72,28,3);x+=30+r()*40}}else{var bw2=40+r()*60,bh2=(kind=='tower'?170:62)*(.4+r())-L*25;if(kind=='college'&&L==0&&x>w*.3&&x<w*.7){bw2=w*.4;bh2=h*.34}g.fillRect(x,base-bh2,bw2,bh2+h);win(g,x,base-bh2,bw2,bh2,r,L);x+=bw2+r()*8}
+    }
+  }
+  var gr=g.createLinearGradient(0,h*.8,0,h);gr.addColorStop(0,'rgba(8,9,16,0)');gr.addColorStop(1,'rgba(4,5,10,.95)');g.fillStyle=gr;g.fillRect(0,h*.8,w,h*.2);
+  if(cr)for(var pi=0;pi<26;pi++){var px=r()*w,ph=26+r()*18,py=h*(.82+r()*.12);g.fillStyle='rgba(8,9,16,.9)';g.fillRect(px-ph*.2,py-ph,ph*.4,ph);g.beginPath();g.arc(px,py-ph-ph*.18,ph*.18,0,7);g.fill()}
+  return o}
+function scene(box,kind,c,fo){
+  cancelAnimationFrame(raf);
+  var cv=el('canvas');cv.id='cv';box.insertBefore(cv,box.firstChild);
+  requestAnimationFrame(function(){
+    var w=cv.width=box.clientWidth,h=cv.height=box.clientHeight,bgc=mk(w,h,kind,c),g=cv.getContext('2d'),P=[],i,t=0;
+    for(i=0;i<90;i++)P.push({x:Math.random()*w,y:Math.random()*h,v:.5+Math.random()});
+    (function loop(){
+      t++;g.drawImage(bgc,0,0);
+      for(i=0;i<3;i++){var fxp=((t*.25*(i+1)+i*w*.4)%(w*1.6))-w*.3,fy=h*(.7+i*.05),fg=g.createRadialGradient(fxp,fy,0,fxp,fy,w*.45);fg.addColorStop(0,'rgba(190,200,220,.13)');fg.addColorStop(1,'rgba(190,200,220,0)');g.fillStyle=fg;g.fillRect(0,0,w,h)}
+      if(OUT.test(kind)){g.strokeStyle='rgba(8,9,16,.7)';g.lineWidth=1.5;for(i=0;i<3;i++){var bx=((t*(.8+i*.3)+i*w*.35)%(w+80))-40,by=h*(.14+i*.06)+Math.sin(t/20+i)*6,wf=Math.sin(t/5+i)*5;g.beginPath();g.moveTo(bx-9,by+wf);g.lineTo(bx,by);g.lineTo(bx+9,by+wf);g.stroke()}g.lineWidth=1}
+      g.strokeStyle='rgba(190,205,230,.35)';
+      P.forEach(function(p){
+        if(fo=='rain'){g.beginPath();g.moveTo(p.x,p.y);g.lineTo(p.x-3,p.y+14*p.v);g.stroke();p.y+=14*p.v;p.x-=2}
+        else if(fo=='leaf'){g.fillStyle='rgba(200,130,50,.7)';g.fillRect(p.x,p.y,3,2);p.y+=.8*p.v;p.x+=Math.sin(t/30+p.v*9)*1.1}
+        else{g.fillStyle='rgba(255,235,200,.5)';g.beginPath();g.arc(p.x,p.y,p.v*1.1,0,7);g.fill();p.y-=.2*p.v;p.x+=Math.sin(t/60+p.v*5)*.3}
+        if(p.y>h||p.y<0||p.x<0||p.x>w){p.y=fo=='dust'?h:-5;p.x=Math.random()*w}
+      });
+      g.fillStyle='rgba(255,200,120,'+Math.max(0,.03+.02*Math.sin(t/17)*Math.sin(t/5.3))+')';g.fillRect(0,0,w,h);
+      raf=requestAnimationFrame(loop)})();
+  })}
+function fx(st){var k=cur.bg;scene(st,KIND[k],BG[k],cur.end?'dust':FXK[k]);sound(FXK[k])}
+function portrait(w){
+  var f=F.indexOf(w)>=0,h=0,i;for(i=0;i<w.length;i++)h=(h*31+w.charCodeAt(i))%360;
+  var hair=f?'#1b1210':(w=='Старичок'?'#aaa':'#15110f'),cl='hsl('+h+',22%,20%)';
+  return '<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sk"><stop offset="0" stop-color="#e0b894"/><stop offset=".6" stop-color="#8a6347"/><stop offset="1" stop-color="#2b1d15"/></linearGradient><linearGradient id="rm"><stop offset="0" stop-color="#ffc882"/><stop offset=".3" stop-color="#ffc882" stop-opacity="0"/></linearGradient></defs>'
+  +(f?'<path d="M45 110Q40 230 60 250L140 250Q165 220 155 110Q150 40 100 38Q50 40 45 110Z" fill="'+hair+'"/>':'')
+  +'<path d="M20 260Q25 175 100 165Q175 175 180 260Z" fill="'+cl+'"/><path d="M20 260Q25 175 100 165Q175 175 180 260Z" fill="url(#rm)" opacity=".5"/>'
+  +'<rect x="86" y="140" width="28" height="35" fill="#6b4a35"/><ellipse cx="100" cy="108" rx="38" ry="48" fill="url(#sk)"/>'
+  +'<path d="M62 100Q62 55 100 55Q140 55 138 100Q125 78 100 76Q75 78 62 100Z" fill="'+hair+'"/></svg>'}
+function sound(k){
+  if(!snd)return;
+  try{
+    if(!AC){
+      AC=new (window.AudioContext||window.webkitAudioContext)();
+      var b=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate),d=b.getChannelData(0),l=0,i;
+      for(i=0;i<d.length;i++){l=(l+.02*(Math.random()*2-1))/1.02;d[i]=l*3.5}
+      var sr=AC.createBufferSource();sr.buffer=b;sr.loop=true;filt=AC.createBiquadFilter();filt.type='lowpass';
+      gain=AC.createGain();gain.gain.value=.3;sr.connect(filt);filt.connect(gain);gain.connect(AC.destination);sr.start();
+    }
+    AC.resume();filt.frequency.value=k=='rain'?1400:(k=='leaf'?500:250);
+  }catch(e){}}
+function line(){
+  var p=cur.lines[li].split('|'),who=p[0],text=p[1],t=document.getElementById('txt'),i=0,sp=document.getElementById('sp');
+  document.getElementById('name').textContent=who;
+  sp.innerHTML=who?portrait(who):'';sp.style.animation='none';void sp.offsetWidth;sp.style.animation='';
+  document.getElementById('ch').innerHTML='';typing=true;t.textContent='';
+  document.getElementById('hint').style.visibility='visible';
+  clearInterval(timer);
+  autoSfx(text);timer=setInterval(function(){i++;t.textContent=text.slice(0,i);if(i>=text.length)finish(text)},18);
+}
+function menu(){
+  cancelAnimationFrame(raf);clearInterval(timer);app.innerHTML='';
+  var m=el('div','menu'),hd=el('div','hd','<div class="ttl"><small>Шамалган · группа П-21 · программирование · пара в 8:30</small><h1>Дорога до колледжа</h1></div>'),l=el('div','list');
+  m.appendChild(hd);
+  Object.keys(HEROES).forEach(function(k){
+    var h=HEROES[k],b=el('button','card',portrait(h[0])+'<span><b>'+h[0]+'</b><small>'+h[2]+'<br>Концовки: '+found(k)+' / '+total(k)+'</small></span>');
+    b.onclick=function(){hero=k;G={};go(h[3])};l.appendChild(b);
+  });
+  l.insertAdjacentHTML('beforeend',MAP);m.appendChild(l);app.appendChild(m);scene(hd,'village',['#141a33','#3b3556'],'rain');
+}
+var sb=el('button',0,'Звук: вкл');sb.id='snd';
+sb.onclick=function(){snd=!snd;sb.textContent='Звук: '+(snd?'вкл':'выкл');if(gain)gain.gain.value=snd?.3:0;else if(snd)sound('dust')};
+document.body.appendChild(sb);
+
+// ====== ГЛАВА 2: КОЛЛЕДЖ, ЗВУКИ, НОВЫЕ МЕСТА ======
+var G={};
+BG.hall=['#262a40','#5a5f80','','10:50','Коридор колледжа'];BG['class']=['#2a2f3d','#6a6f55','','8:30','Аудитория'];
+BG.canteen=['#3a2a20','#8a5a30','','13:00','Столовая'];BG.dusk=['#3a2040','#d08a50','','15:40','Двор колледжа'];
+KIND.hall='hall';KIND['class']='room';KIND.canteen='room';KIND.dusk='college';KIND.bus='room';
+FXK.hall='dust';FXK['class']='dust';FXK.canteen='dust';FXK.dusk='leaf';
+F.push('Айша');
+function inter(g,w,h,kind,r){
+  var x,i,L;
+  if(kind=='room'){
+    for(x=w*.08;x<w*.9;x+=w*.3){var wg=g.createLinearGradient(0,h*.1,0,h*.6);wg.addColorStop(0,'rgba(190,210,255,.55)');wg.addColorStop(1,'rgba(120,140,190,.12)');g.fillStyle=wg;g.fillRect(x,h*.1,w*.18,h*.5);g.fillStyle='rgba(10,12,20,.8)';g.fillRect(x+w*.09-2,h*.1,4,h*.5);g.fillRect(x,h*.33,w*.18,4)}
+    for(L=0;L<3;L++){var dy=h*(.66+L*.1),dw=w*(.2+L*.05);g.fillStyle='rgba('+(16-L*4)+','+(14-L*4)+',20,.92)';for(x=w*.04+L*18;x<w;x+=dw*1.3){g.fillRect(x,dy,dw,10+L*4);g.fillRect(x+6,dy,6,h*.3);g.fillRect(x+dw-12,dy,6,h*.3)}}
+  }else{
+    g.fillStyle='rgba(8,9,18,.78)';g.beginPath();g.moveTo(0,h);g.lineTo(w*.38,h*.5);g.lineTo(w*.62,h*.5);g.lineTo(w,h);g.fill();
+    for(i=0;i<6;i++){var f=1-i/6;g.fillStyle='rgba(255,230,180,'+(.2+.5*(1-f))+')';g.fillRect(w/2-w*.12*f,h*(.1+(1-f)*.34),w*.24*f,6*f+2)}
+    for(i=0;i<4;i++){var q=1-i/4;g.fillStyle='rgba(30,26,44,.9)';g.fillRect(w*.5-w*.46*q,h*.5-h*.3*q,w*.09*q,h*.34*q);g.fillRect(w*.5+w*.37*q,h*.5-h*.3*q,w*.09*q,h*.34*q)}
+  }
+}
+function ns(d,f,v,t0){var b=AC.createBuffer(1,AC.sampleRate*d,AC.sampleRate),a=b.getChannelData(0),i;for(i=0;i<a.length;i++)a[i]=(Math.random()*2-1)*(1-i/a.length);var o=AC.createBufferSource(),fl=AC.createBiquadFilter(),g=AC.createGain();o.buffer=b;fl.frequency.value=f;g.gain.value=v;o.connect(fl);fl.connect(g);g.connect(AC.destination);o.start(AC.currentTime+t0)}
+function tn(ty,f1,f2,d,v,t0){var o=AC.createOscillator(),g=AC.createGain(),T=AC.currentTime+t0;o.type=ty;o.frequency.setValueAtTime(f1,T);o.frequency.exponentialRampToValueAtTime(f2,T+d);g.gain.setValueAtTime(v,T);g.gain.exponentialRampToValueAtTime(.001,T+d);o.connect(g);g.connect(AC.destination);o.start(T);o.stop(T+d)}
+function sfx(n){
+  if(!snd||!AC)return;
+  try{AC.resume();var i;
+    if(n=='dog')for(i=0;i<3;i++){tn('sawtooth',420,180,.14,.18,i*.28);ns(.14,900,.15,i*.28)}
+    if(n=='door'){tn('sine',110,40,.25,.5,0);tn('sawtooth',220,120,.5,.06,.2)}
+    if(n=='horn'){tn('square',440,438,.4,.07,0);tn('square',349,347,.4,.07,0)}
+    if(n=='bell')for(i=0;i<5;i++)tn('sine',1800,1790,.12,.2,i*.16);
+    if(n=='phone'){tn('sine',880,879,.1,.2,0);tn('sine',880,879,.1,.2,.18)}
+    if(n=='bus')ns(1.4,160,.5,0);
+    if(n=='steps')for(i=0;i<5;i++)ns(.07,500,.6,i*.28);
+    if(n=='bird')for(i=0;i<3;i++)tn('sine',3000+i*300,4500,.08,.08,i*.15);
+  }catch(e){}}
+var KW=[[/собак|лает/i,'dog'],[/звонок|звонка/i,'bell'],[/вибрир|сообщени|пишет/i,'phone'],[/маршрутк|автобус|такси/i,'bus'],[/гудок|гудит|сигнал|машин/i,'horn'],[/двер|подъезд|пекарн/i,'door'],[/бежи|бегом|шаг|пешком|идёт|ведёт/i,'steps'],[/птиц|щебет/i,'bird']];
+function autoSfx(t){for(var i=0;i<KW.length;i++)if(KW[i][0].test(t)){sfx(KW[i][1]);return}}
+function fx(st){var k=cur.bg;scene(st,KIND[k],BG[k],cur.end?'dust':FXK[k]);sound(FXK[k]);if(cur.end&&cur.id[0]=='f')sfx('bell');else if(/park|home_s|yard/.test(k))sfx('bird')}
+var ARR={e_a_run:'',e_a_late:'late',e_a_cheat:'cheat',e_a_help:'friend',e_a_solo:'',e_a_sorry:'friend',e_a_shawarma:'late',e_a_site:'',e_a_guard:'late',e_i_coffee:'late',e_i_honest:'late',e_i_excuse:'late ex',e_i_chat:'',e_i_phone:'',e_i_run:'late',e_i_calm:'late',e_i_photo:'late',e_i_squad:'',e_i_bus:'late',e_s_road:'',e_s_chess:'',e_s_ride:'',e_s_crowd:'',e_s_taxi:'met',e_s_late:'late',e_s_dog:'',e_s_fence:'',e_s_jump:'',e_s_garage:'',e_s_lost:'late',e_s_granny:'late',e_s_friend:'',e_s_bakery:'late'};
+var CH={a:'ca0',i:'ci0',s:'cs0'};
+HEROES.a[2]='Второй курс. Друг Полат, дорога, пары и вечер до 15:40.';HEROES.i[2]='Второй курс. Подруги, такси или пешком, и целый день в колледже.';HEROES.s[2]='Второй курс. Идёт один, но день может изменить знакомство.';
+function endScreen(id){
+  save(id);
+  var e=el('div','end'),r=el('div','row'),a,b=el('button','btn alt','В меню');
+  b.onclick=menu;
+  e.innerHTML='<h2>'+cur.title+'</h2><p>'+cur.text+'</p>';
+  if(ARR[id]!=null){
+    (ARR[id]||'').split(' ').forEach(function(f){if(f)G[f]=1});
+    a=el('button','btn','Идти на пары');a.onclick=function(){go(CH[hero])};
+  }else{
+    e.innerHTML+='<p>Концовок найдено: '+found(hero)+' / '+total(hero)+'</p>';
+    a=el('button','btn','Сыграть ещё раз');a.onclick=function(){G={};go(HEROES[hero][3])};
+  }
+  r.appendChild(a);r.appendChild(b);e.appendChild(r);app.appendChild(e);
+}
+en('e_s_taxi','college','Новая знакомая','В такси ты наконец узнал её имя: Айша, третий курс, архитектурное отделение. Ты сказал, что учишься на втором. Она кивнула на тубус на коленях: сегодня защита макета, и она очень волнуется.','🚕');
+
+// --- Адлан: колледж ---
+sc('ca0','class',['late?|Дверь аудитории скрипит громче, чем хотелось бы. Все оборачиваются.','late?Препод|Адлан, Полат. Вы решили, что звонок — это просто рекомендация?','Полат|Мы думали, звонок — это такая песня для настроения.','!late?|Колледж стоит рядом с гимназией на улице Байтурсынова, и сюда сходится пол-села. Вы садитесь за парту за секунду до преподавателя. В аудитории пахнет мелом и мокрыми куртками. Второй курс, группа П-21, программирование: за окном дождь, а на проекторе уже светится код на JavaScript.','cheat?Препод|Кстати, Адлан, лабораторные ваша и Полата совпадают до последней запятой. Даже ошибки в одних и тех же местах.','Препод|Итак, кто объяснит, чем let отличается от var?','Препод|И ответ «они обе из трёх букв» не принимается. Уже пробовали.','|Полат сползает под парту. Он, как всегда, рассчитывал списать у Адлана.','Полат|Если что, моё тело передайте науке. Код оставьте себе: он всё равно не запускается.'],[['Поднять руку и ответить','ca_ans'],['Уткнуться в тетрадь','ca_hide']]);
+sc('ca_ans','class',['Адлан|let видна только внутри блока, а var живёт во всей функции. Поэтому var лучше не брать.','Препод|Хорошо. Садитесь, Адлан. Полат, а вы что скажете?','Полат|Я… полностью согласен с Адланом.','Препод|С каким из трёх предложений, Полат? Я никуда не спешу.','Полат|Со вторым. Оно самое… убедительное.','|По аудитории прокатывается смех. Полат смотрит на друга умоляюще.'],[['Тихо подсказать Полату','ca_break','friend'],['Промолчать','ca_break']]);
+sc('ca_hide','class',['Препод|Полат, к доске.','Полат|Я?! Но я же…','|Он идёт к доске, как на казнь. Мел крошится в руках.','Полат|Передайте маме, что я её любил. И что котлету из холодильника съел не я.'],[['Вмешаться и вытащить друга','ca_break','friend'],['Молча смотреть','ca_break']]);
+sc('ca_break','hall',['|Звонок. Коридор наполняется шумом: хлопают двери, кто-то спорит про расписание, пахнет кофе из автомата.','friend?Полат|Спасибо, ты меня выручил. Обед с меня.','!friend?Полат|Ну спасибо… Я чуть сквозь пол не провалился.','|На подоконнике сидят девочки с конспектами, а у окна кто-то репетирует выступление шёпотом.','|Мимо проходит Исмира, староста группы, с папкой.','Исмира|Ребята, сегодня после пар репетиция КВН в актовом зале. Нужны люди!','Полат|А если я не смешной? Меня освободят?','Исмира|Смешных у нас хватает. Не хватает тех, кто выучил текст.'],[['Согласиться участвовать','ca_lunch','kvn'],['Отказаться: надо доделать реферат','ca_lunch']]);
+sc('ca_lunch','canteen',['|В столовой гул, звенят подносы, из кухни тянет борщом. Вы садитесь у окна.','|На подносе у Адлана остывает гречка с котлетой, а Полат уже допивает компот и косится на его порцию.','Полат|Адлан, скинь мне лабораторную. Ну дай списать, как всегда!','Адлан|Ты списываешь у меня так давно, что я скоро пришлю тебе счёт за авторские права.','Полат|Согласен платить компотом. Это валюта нашей дружбы.','|Адлан смотрит на друга: у Полата одни пятёрки, и почти все со списанных лабораторных.'],[['Помочь Полату с лабораторной','ca_yard','help'],['Просто болтать и смотреть ролики','ca_yard']]);
+sc('ca_last','class',['|Последняя пара. За окном темнеет, лампы гудят под потолком. Контрольная по программированию на сорок минут.','Препод|Время идёт. Звонок в 15:40, и ни секундой позже.','Полат|Тсс! Адлан! Третий вопрос — какой ответ?','Адлан|Если нас поймают, на памятнике напишут: «Списывал, но неудачно».'],[['Подсказать','ca_end','cheat2'],['Не подсказывать','ca_end']]);
+S.ca_end={pick:function(){return G.help&&G.friend?'f_a_best':G.kvn?'f_a_kvn':(G.cheat||G.cheat2)?'f_a_cheat':'f_a_calm'}};
+sc('ca_dummy','class',[''],[]);
+S.ca_end.lines=[];
+en('f_a_best','dusk','Лучшие друзья второго курса','Когда в 15:40 прозвенел звонок, вы с Полатом вышли из аудитории последними. Контрольная осталась позади, Полат уже прикидывал, у кого списать завтра, а в телефоне уже лежал план на вечер.<br><br>На улице темнело раньше обычного, и моросил тот же дождь, что и утром. Полат шёл рядом и впервые за день молчал по-настоящему, без шуток. «Знаешь, — сказал он, — я бы без тебя на втором курсе не продержался». Адлан улыбнулся и ответил, что и сам бы скучал.<br><br>Домой вы шли вместе, как в первый день. Иногда обычный вторник оказывается началом дружбы на много лет.','🤝');
+en('f_a_kvn','dusk','Голос команды','Репетиция КВН затянулась до семи. Адлан сначала только слушал, а потом придумал шутку про расписание. Зал смеялся так, что Исмира закрыла дверь.<br><br>Тебя взяли в основной состав. Полат, красный от смеха, шептал, что это лучшая пара в его жизни. Во дворе колледжа горели фонари, и ты впервые почувствовал себя частью чего-то большего.<br><br>Домой ты шёл уставший, но улыбался. Завтра в расписании снова история, но теперь у тебя есть сцена.','🎤');
+en('f_a_cheat','dusk','Цена шпаргалки','Препод заметил, как Полат разворачивает лист, и молча положил свою ладонь на ваши работы. Контрольная ушла на пересдачу, а в журнале появилась строчка с замечанием.<br><br>Вы вышли в сумерки молча. Дождь стучал по козырьку, фонари отражались в лужах. Полат наконец тихо сказал: «Прости, что втянул тебя». Адлан пожал плечами, но было видно, что он тоже расстроен.<br><br>Через неделю вы пересдали на пятёрки и поклялись, что больше никогда. Урок вышел дорогим, но запомнился надолго.','📝');
+en('f_a_calm','dusk','Обычный хороший день','Пары закончились ровно в 15:40. Ты собрал сумку, надел куртку и вышел во двор, где пахло мокрым асфальтом и первой осенью.<br><br>Полат убежал на остановку, крикнув, что напишет вечером. Ты шёл один, слушал шум дождя и думал о том, что день прошёл спокойно: без побед и без провалов.<br><br>Дома мама уже накрыла на стол. Иногда лучший день — тот, о котором потом и рассказать нечего.','🌧️');
+
+// --- Исмира: колледж ---
+sc('ci0','class',['late?|Ты проскальзываешь на последнюю парту, стараясь не греметь стулом. Преподаватель делает вид, что не заметил.','!late?|Ты староста группы П-21, Айлин твой зам. Группа занимает два ряда у окна: Адлан, Полат и Сыпатай сидят впереди, а вы вчетвером позади. За стеклом шумит дождь, в аудитории тепло и пахнет мандариновым гелем для рук.','ex?Куратор|Исмира, помните про вашу отмазку? С сегодняшнего дня дежурите по аудитории.','Айлин|Исмира, передай конспект!','Аялым|Тсс! Он смотрит на нас!','|На проекторе блок-схема и кусок кода на JavaScript, а до конца пар ещё целый день.'],[['Передать записку Айлин','ci_break','notes'],['Слушать урок','ci_break']]);
+sc('ci_break','hall',['|Перемена. Коридор гудит, как улей. Кто-то спорит про расписание, кто-то обнимается после каникул.','|Из соседнего кабинета выглядывает преподаватель и просит потише, но коридор всё равно гудит.','Аялым|Слышали? В субботу вечер колледжа!','Айым|Я иду в фотозону! Нужно платье!','Аялым|У тебя платьев больше, чем у Полата списанных лабораторных.','Айлин|Как зам старосты объявляю: нужны люди в оргкомитет. Записывайтесь!'],[['Записаться в оргкомитет','ci_lunch','org'],['Отказаться: надо учиться','ci_lunch']]);
+sc('ci_lunch','canteen',['|В столовой стоит запах свежей выпечки. Вы занимаете столик у окна.','Айлин|Девочки, у меня отчёт по лабораторной не напечатан. А сдавать сегодня!','Аялым|Я знаю, где работает принтер, но он вечно жуёт бумагу. Характер как у препода: всё сожрёт и ещё посмотрит с укором.','Айым|Моя справка у него уже третий день в желудке. Я его простила. Пока.'],[['Пойти печатать в библиотеку','ci_yard','print'],['Заказать булочки и болтать','ci_yard','talk']]);
+sc('ci_last','class',['|Последняя пара. Лампы гудят, за окном совсем темно. Зачёт на сорок минут.','Препод|Звонок в 15:40, не раньше.','Айлин|Исмира… я совсем не помню четвёртое задание.','Айлин|Если провалю, скажите, что я героически пала в бою с условием задачи.','Исмира|Похороним с почестями. И с пересдачей в пятницу.'],[['Помочь Айлин','ci_end','friend'],['Решать самой','ci_end']]);
+S.ci_end={pick:function(){return G.friend&&G.org?'f_i_party':G.friend?'f_i_friends':G.talk?'f_i_talk':'f_i_study'}};
+en('f_i_party','dusk','Вечер, который запомнят','После пар вы вчетвером остались в актовом зале. Айым развешивала гирлянды, Аялым спорила про музыку, Айлин искала скотч. Ты стояла на стремянке и думала, что давно так не смеялась.<br><br>Кураторша, обычно строгая, принесла чай и сказала: «Вы лучшая команда этого года». За окном погасли фонари, а в зале мерцали огоньки.<br><br>Домой вы шли толпой, обнявшись, под одним зонтом. И каждая из вас знала, что в субботу будет что-то настоящее.','🎉');
+en('f_i_friends','dusk','Зачёт на четверых','Ты тихонько объяснила Айлин задачу, и она, вздохнув, решила её сама. К звонку вы сдали работы вместе.<br><br>На выходе Аялым достала булочки, которые приберегла с утра. Они остыли, но вкуснее вы ничего не ели. Айым сфотографировала вас на ступеньках, и снимок вышел тёплым, несмотря на дождь.<br><br>В тот день ты поняла, что дружба измеряется не оценками, а тем, кто останется с тобой после последнего звонка.','📚');
+en('f_i_talk','dusk','Болтали до звонка','Обед растянулся на час, потом на перемену, потом на половину пары. Вы смеялись так, что соседний столик оборачивался.<br><br>Зачёт ты написала на «отлично»: болтовня болтовнёй, а материал ты знала. Так что даже ленивый день у отличницы остаётся отличным. На выходе Айлин сказала: «Зато мы так хорошо поговорили!»<br><br>Вечером ты поймала себя на мысли, что завтра обязательно подготовишься. Обязательно. Почти точно.','☕');
+en('f_i_study','dusk','Отличница','Ты писала зачёт, не поднимая головы. Лампы гудели, дождь стучал в окно, а время шло к 15:40. Ты сдала работу первой и получила «отлично».<br><br>Девочки вышли позже: уставшие, но живые. Айлин обняла тебя за плечи и сказала, что без твоих конспектов они бы пропали. Ты улыбнулась, но внутри было странное чувство, будто ты что-то пропустила.<br><br>В автобусе по дороге домой ты открыла чат. Там уже ждали сообщения от всех троих. И стало легче.','🏅');
+
+// --- Сыпатай и Айша (третий курс) ---
+sc('cs0','hall',['late?|Ты влетаешь в колледж на ходу, ещё запыхавшийся. В коридоре пахнет кофе и мокрыми куртками.','!late?|В колледже у гимназии шумно, как обычно: на крыльце толпятся ребята из соседних сёл. Второй курс — уже не новичок, но и не старшекурсник.','met?Айша|О, мой спаситель с остановки! Ты тоже тут учишься?','met?Сыпатай|Второй курс. А ты, значит, третий?','!met?|Впереди девушка с огромным тубусом. Она идёт быстро, ломает шаг и вдруг роняет всё на пол. Листы разлетаются по плитке.','!met?Айша|Ой! Осторожно, там чертежи!'],[['Помочь собрать листы','cs_break','help'],['Пройти мимо','cs_break']]);
+sc('cs_break','hall',['|Перемена. Дождь стучит в большие окна коридора.','Айша|Спасибо. Я Айша, третий курс, архитектурное отделение. А ты?','Сыпатай|Сыпатай, второй курс.','help?Айша|Ты хорошо ориентируешься в чертежах для первого раза.','!help?Айша|Ты тот, кто прошёл мимо? Ладно, мне всё равно нужен человек с руками.','Адлан|Сыпатай, лабораторная через десять минут, вся группа ждёт!','Айша|У меня в два защита макета. Ты не поможешь донести его из мастерской?'],[['Согласиться помочь','cs_lunch','carry'],['Сказать, что у тебя пара','cs_lunch']]);
+sc('cs_lunch','canteen',['|В столовой шумно. За соседним столом вся группа П-21 машет тебе рукой: Адлан показывает на свободный стул, Айлин кричит: «Сыпатай, мы тебе булочку оставили! Она уже остыла и считает тебя предателем!»','|Но ты садишься к Айше. На её подносе остывает чай, она даже не притронулась к нему.','Айша|Макет — это дом у реки. Три месяца работы. Если комиссия скажет, что он «скучный», я не знаю, что буду делать.','|Её пальцы чуть дрожат, когда она крутит чашку.'],[['Подбодрить','cs_carry','kind'],['Предложить прогнать речь','cs_carry','rehearse'],['Пошутить про комиссию','cs_carry','joke']]);
+sc('cs_def','class',['|В аудитории тихо. На столе стоит макет: белый картон, тонкие линии, маленькие деревья из проволоки.','carry?|Ты стоишь у входа с коробкой и боишься дышать. Айша кивает тебе и выходит к комиссии.','careful?|Макет доехал целым, ни одного обломка.','!careful?|Один угол макета слегка погнулся, но Айша быстро поправила его пальцем.','Айша|Дом стоит на склоне, чтобы река была видна из каждой комнаты…','|Голос у неё сначала срывается, но потом становится ровным и уверенным. Комиссия молчит, кто-то кивает.'],[['Остаться на защите и слушать','cs_last','stay'],['Уйти на свою пару','cs_last']]);
+sc('cs_last','dusk',['|Последняя пара подходит к концу. За окном сумерки, фонари включаются один за другим.','Айша|Я справилась. Они сказали, что макет живой.','Сыпатай|Главное, что живой хотя бы макет. Про нас этого не скажешь: мы с утра на кофе и упрямстве.','Айша|Ты не проводишь меня до остановки? Мне нужно выдохнуть.'],[['Пойти вместе','cs_end','walk'],['Попрощаться и уйти','cs_end']]);
+S.cs_end={pick:function(){return G.stay&&G.walk?'f_s_close':(G.stay||G.walk||G.carry)?'f_s_friend':'f_s_alone'}};
+en('f_s_close','dusk','Теперь вы знакомы по-настоящему','Вы вышли из колледжа в ранние сумерки. Дождь почти закончился, на асфальте дрожали отражения фонарей. Айша шла рядом и вдруг начала смеяться: тихо, потом громче. «Три месяца, — сказала она. — Три месяца я боялась именно этого дня».<br><br>Вы дошли до остановки пешком, хотя автобус стоял прямо у входа. Она рассказывала про свой первый чертёж, про город, который хочет построить, про то, как трудно быть старше всех на проекте. Ты слушал и понимал, что давно не слушал так никого.<br><br>На прощание она записала тебе свой номер на обороте билета. «Завтра покажу, как делать макеты. Если ты захочешь». Автобус ушёл, а вы ещё минуту стояли под фонарём.','🌆');
+en('f_s_friend','dusk','Старшая подруга','День прошёл так, как редко проходят дни второго курса: ты узнал человека, который старше тебя на год, но уже знает, чего хочет. Айша поделилась с тобой конспектами и обещала познакомить со своей группой.<br><br>На выходе вы попрощались тепло, но без лишних слов. Ты шёл домой и думал о её макете: маленьком доме на склоне, где вода видна из каждого окна.<br><br>Может быть, это начало чего-то большего. А может, просто хорошая дружба. Время покажет.','🏠');
+en('f_s_alone','dusk','Девушка с тубусом','День закончился, и ты вышел во двор один. Дождь прекратился, воздух стал прозрачным, а на асфальте остались лужи, в которых отражалось небо.<br><br>Ты вспомнил девушку с тубусом: как она нервничала, как держала чашку чая обеими руками. И подумал, что мог бы остаться, мог бы помочь, мог бы просто сказать слово.<br><br>Ты шёл домой и надеялся, что завтра увидишь её снова в том же коридоре. А если нет, то хотя бы узнаешь, чем всё закончилось.','🌫️');
+
+// ====== ШАМАЛГАН: село, карта, места ======
+function mtn(g,w,h,r){
+  var x,hz=g.createLinearGradient(0,h*.4,0,h*.62);g.fillStyle='rgba(26,32,58,.8)';g.beginPath();g.moveTo(0,h*.6);
+  for(x=0;x<=w;x+=w/9){g.lineTo(x,h*(.26+.2*r()));g.lineTo(x+w/18,h*(.46+.06*r()))}
+  g.lineTo(w,h*.6);g.fill();
+  hz.addColorStop(0,'rgba(190,200,230,0)');hz.addColorStop(1,'rgba(190,200,230,.22)');g.fillStyle=hz;g.fillRect(0,h*.4,w,h*.22)}
+KIND.home_a='house';KIND.street='village';KIND.stop='village';KIND.taxi='village';KIND.yard='village';
+BG.home_a[4]='Дом Адлана';BG.street[4]='Сельская улица';BG.park[4]='Роща у арыка';BG.stop[4]='Остановка на Жибек Жолы';BG.yard[4]='Дворы';BG.taxi[4]='Такси';BG.college[4]='Колледж, ул. Байтурсынова';BG.bus[4]='Маршрутка';
+var PL={a0:'Дом Адлана, север села',a_wait:'ул. Макатаева',a_wait2:'ул. Макатаева',a_go:'ул. Макатаева',a_shop:'Магазин на Жибек Жолы',a_bus:'Маршрутка, ул. Жибек Жолы',a_park:'Роща у арыка',a_site:'Стройка у ул. Байтурсынова',
+i0:'Дом Исмиры, у больницы',i_girls:'Остановка у больницы',i_taxi:'Такси, ул. Жибек Жолы',i_taxi2:'Остановка у больницы',i_walk:'Дорога к колледжу',i_girls2:'Вход в колледж',
+s0:'Дом Сыпатая, у музея Атамекен',s_bike:'ул. Алжан',s_park:'Роща у арыка',s_garage:'Гаражи у ул. Алжан',s_bus:'Маршрутка',s_wait:'Остановка на Жибек Жолы',s_walk:'Дворы у ул. Алжан',s_walk2:'Тупик во дворах',s_scooter:'Жибек Жолы'};
+var MAP='<svg viewBox="0 0 1162 743" style="width:100%;height:auto;background:#0f1220;border:1px solid rgba(233,196,106,.35);border-radius:8px;margin-top:6px;display:block"><g fill="none" stroke-linecap="round"><path d="M607 0C600 150 640 300 620 400S760 560 880 743" stroke="#3b7ea1" stroke-width="7"/><path d="M30 665L1150 60" stroke="#6b7599" stroke-width="14"/><path d="M480 140L700 720" stroke="#3a4160" stroke-width="7"/><path d="M945 225L1140 540" stroke="#3a4160" stroke-width="7"/><path d="M800 700L1130 520" stroke="#3a4160" stroke-width="7"/></g><g font-size="28" fill="#9aa0bd" font-family="Georgia,serif"><text x="650" y="330">Больница</text><text x="190" y="540">Музей Атамекен</text><text x="1020" y="590">Гимназия</text><text x="700" y="500" transform="rotate(-27 700 500)">ул. Жибек Жолы</text></g><circle cx="337" cy="383" r="22" fill="#2f8fe8"/><circle cx="895" cy="420" r="22" fill="#9a4fc0"/><circle cx="882" cy="129" r="22" fill="#d63a5a"/><circle cx="968" cy="648" r="26" fill="#000" stroke="#e9c46a" stroke-width="5"/><g font-size="34" fill="#f1eff8" font-family="Georgia,serif"><text x="270" y="345">Сыпатай</text><text x="920" y="470">Исмира</text><text x="800" y="100">Адлан</text><text x="860" y="705">Колледж</text></g></svg>';
+
+// ====== ЛЕСТНИЦЫ, КАБИНЕТЫ, ПРОГУЛКА ======
+var IN=/^(room|hall|cabinet|stairs)$/,OUT=/^(village|house|trees|college|crowd)$/,lastBg='';
+BG.entr=['#2b2f50','#8a7a9a','','8:20','Крыльцо колледжа'];BG.yardc=['#3a2f4a','#c98a5a','','14:20','Двор колледжа'];BG.stairs=['#262a40','#6a6070','','8:25','Лестница колледжа'];
+KIND.entr='crowd';KIND.yardc='crowd';KIND.stairs='stairs';KIND['class']='cabinet';KIND.dusk='crowd';
+FXK.entr='leaf';FXK.yardc='leaf';FXK.stairs='dust';
+BG['class'][4]='Кабинет';BG.hall[4]='Коридор колледжа';BG.canteen[4]='Столовая';BG.dusk[4]='Двор после пар';
+F.push('Охранник');
+function inter(g,w,h,kind,r){
+  var x,i,L;
+  if(kind=='room'||kind=='cabinet'){
+    if(kind=='cabinet'){
+      g.fillStyle='rgba(66,42,24,.9)';g.fillRect(w*.1,h*.1,w*.54,h*.34);
+      g.fillStyle='rgba(18,46,36,.97)';g.fillRect(w*.11,h*.115,w*.52,h*.31);
+      g.strokeStyle='rgba(235,235,225,.45)';g.lineWidth=2;for(i=0;i<4;i++){g.beginPath();g.moveTo(w*.14,h*(.17+i*.06));g.lineTo(w*(.2+r()*.38),h*(.17+i*.06));g.stroke()}g.lineWidth=1;
+      var wg0=g.createLinearGradient(0,h*.1,0,h*.6);wg0.addColorStop(0,'rgba(190,210,255,.55)');wg0.addColorStop(1,'rgba(120,140,190,.12)');g.fillStyle=wg0;g.fillRect(w*.72,h*.1,w*.2,h*.5);g.fillStyle='rgba(10,12,20,.8)';g.fillRect(w*.82-2,h*.1,4,h*.5);g.fillRect(w*.72,h*.33,w*.2,4);
+      g.fillStyle='rgba(30,22,16,.95)';g.fillRect(w*.16,h*.54,w*.26,h*.05);g.fillRect(w*.18,h*.59,6,h*.12);g.fillRect(w*.38,h*.59,6,h*.12);
+    }else for(x=w*.08;x<w*.9;x+=w*.3){var wg=g.createLinearGradient(0,h*.1,0,h*.6);wg.addColorStop(0,'rgba(190,210,255,.55)');wg.addColorStop(1,'rgba(120,140,190,.12)');g.fillStyle=wg;g.fillRect(x,h*.1,w*.18,h*.5);g.fillStyle='rgba(10,12,20,.8)';g.fillRect(x+w*.09-2,h*.1,4,h*.5);g.fillRect(x,h*.33,w*.18,4)}
+    for(L=0;L<3;L++){var dy=h*(.66+L*.1),dw=w*(.2+L*.05);g.fillStyle='rgba('+(16-L*4)+','+(14-L*4)+',20,.92)';for(x=w*.04+L*18;x<w;x+=dw*1.3){g.fillRect(x,dy,dw,10+L*4);g.fillRect(x+6,dy,6,h*.3);g.fillRect(x+dw-12,dy,6,h*.3)}}
+  }else if(kind=='stairs'){
+    g.fillStyle='rgba(190,210,255,.4)';g.fillRect(w*.4,h*.1,w*.2,h*.28);g.fillStyle='rgba(10,12,20,.8)';g.fillRect(w*.5-2,h*.1,4,h*.28);
+    for(i=0;i<9;i++){var y=h*(.9-i*.055),hw=w*(.46-i*.025);g.fillStyle='rgba('+(18+i*3)+','+(18+i*3)+','+(30+i*4)+',.95)';g.fillRect(w/2-hw,y,hw*2,h*.05);g.fillStyle='rgba(255,230,180,'+(.05+i*.012)+')';g.fillRect(w/2-hw,y,hw*2,3)}
+    g.strokeStyle='rgba(120,100,70,.85)';g.lineWidth=5;g.beginPath();g.moveTo(w*.04,h*.95);g.lineTo(w*.3,h*.42);g.moveTo(w*.96,h*.95);g.lineTo(w*.7,h*.42);g.stroke();g.lineWidth=1;
+  }else{
+    g.fillStyle='rgba(8,9,18,.78)';g.beginPath();g.moveTo(0,h);g.lineTo(w*.38,h*.5);g.lineTo(w*.62,h*.5);g.lineTo(w,h);g.fill();
+    for(i=0;i<6;i++){var f=1-i/6;g.fillStyle='rgba(255,230,180,'+(.2+.5*(1-f))+')';g.fillRect(w/2-w*.12*f,h*(.1+(1-f)*.34),w*.24*f,6*f+2)}
+    for(i=0;i<4;i++){var q=1-i/4;g.fillStyle='rgba(30,26,44,.9)';g.fillRect(w*.5-w*.46*q,h*.5-h*.3*q,w*.09*q,h*.34*q);g.fillRect(w*.5+w*.37*q,h*.5-h*.3*q,w*.09*q,h*.34*q)}
+  }
+}
+function man(g,x,y,t,s,d){
+  g.save();g.translate(x,y);if(d<0)g.scale(-1,1);g.fillStyle='#04050a';g.strokeStyle='#04050a';g.lineCap='round';g.lineWidth=7*s;
+  var sw=Math.sin(t/6)*14*s;
+  var q=Math.cos(t/6);g.beginPath();g.moveTo(0,-40*s);g.lineTo(sw,-Math.max(0,q)*9*s);g.moveTo(0,-40*s);g.lineTo(-sw,-Math.max(0,-q)*9*s);g.stroke();
+  g.fillRect(-9*s,-80*s,18*s,42*s);g.beginPath();g.arc(0,-90*s,9*s,0,7);g.fill();
+  g.lineWidth=5*s;g.beginPath();g.moveTo(0,-74*s);g.lineTo(-sw*.7,-48*s);g.moveTo(0,-74*s);g.lineTo(sw*.7,-48*s);g.stroke();
+  g.fillRect(-15*s,-76*s,7*s,24*s);g.restore()}
+var WALK={a:'Адлан выходит из дома и идёт по улице Макатаева на юг, к Жибек Жолы. Воздух сырой, пахнет дымом.',i:'Исмира выходит из калитки и идёт к остановке у больницы. Под ногами хрустит гравий.',s:'Сыпатай выходит со двора и идёт вдоль улицы Алжан. Над горами светает.'};
+function walk(done){
+  cancelAnimationFrame(raf);clearInterval(timer);app.innerHTML='';
+  var st=el('div'),cv=el('canvas'),fin=0;st.id='stage';cv.id='cv';cv.style.animation='none';st.appendChild(cv);
+  st.appendChild(el('div','wcap',WALK[hero]||'Ты выходишь из дома.'));st.appendChild(el('div','wskip','нажми, чтобы пропустить'));app.appendChild(st);
+  function end(){if(fin)return;fin=1;cancelAnimationFrame(raf);done()}
+  st.onclick=end;
+  requestAnimationFrame(function(){
+    var w=cv.width=st.clientWidth,h=cv.height=st.clientHeight,W=w*2,bg=mk(W,h,'village',['#233055','#c58a6a']),g=cv.getContext('2d'),t=0,gy=h*.84;
+    (function loop(){
+      if(fin)return;t++;
+      var o=(t*1.2)%W;g.drawImage(bg,-o,0);g.drawImage(bg,W-o,0);
+      g.fillStyle='rgba(6,7,14,.92)';g.fillRect(0,gy,w,h-gy);
+      var fo=(t*2.5)%70;g.fillStyle='rgba(26,29,48,.95)';
+      for(var x=-fo;x<w;x+=70)g.fillRect(x,gy-46,6,46);
+      g.fillRect(0,gy-34,w,4);g.fillRect(0,gy-18,w,4);
+      man(g,w*.4,gy+14-Math.abs(Math.sin(t/6))*3,t,1.5);
+      if(t%20==0&&AC&&snd)try{ns(.07,500,.5,0)}catch(e){}
+      if(t>150){g.fillStyle='rgba(0,0,0,'+((t-150)/40)+')';g.fillRect(0,0,w,h)}
+      if(t>190)end();else raf=requestAnimationFrame(loop)})();
+  })}
+function cd(id,t,tm){S[id].card=t;if(tm)S[id].tm=tm}
+
+// --- Адлан ---
+sc('ca_in','entr',['|Колледж встречает шумом. На крыльце толпятся второкурсники, у забора кто-то спорит про футбол, а из окон второго этажа пахнет кофе и мелом.','!late?|Часы над входом показывают 8:22. До звонка почти десять минут, можно выдохнуть.','late?|Часы над входом показывают без пяти девять. Пара давно идёт, во дворе пусто. Дверь уже закрыта.','!late?Охранник|Доброе утро! Куртки в гардероб, там дождь с вас течёт.','late?Охранник|Опять опаздываете? Давайте быстрее, пока Исмира с журналом не заметила.','friend?Полат|Ну что, второй курс — это уже не страшно, да?','Аялым|Адлан, Полат! Наша группа уже заняла вам места, быстрее!'],[['Подняться по лестнице','ca_st'],['Сначала сдать куртку в гардероб','ca_st','cloak']]);
+sc('ca_st','stairs',['|Лестница широкая, ступени стёрты тысячами подошв. На стене висят расписание, листовки про кружки и чьё-то забытое объявление про пропавший зонт.','|Где-то наверху хлопает дверь, и по перилам катится эхо шагов.','cloak?|В гардеробе осталась мокрая куртка, и теперь идти налегке приятно.','Полат|Наш кабинет на втором этаже. Опять программирование, а я даже редактор не открывал.'],[['Идти в кабинет','ca0']]);
+sc('ca_yard','yardc',['|Большая перемена во дворе. Ребята сидят на ступенях, кто-то гоняет мяч, в воздухе пахнет мокрой листвой и жареной картошкой из столовой.','Полат|Слушай, сыграем в футбол? Ты против меня, проигравший покупает компот.','|Из окна второго этажа выглядывает Исмира, староста группы.','kvn?Исмира|Адлан, репетиция в пять. Не забудь!','!kvn?Исмира|Ребята, в актовом зале ещё есть места на репетицию, если надумаете.'],[['Сыграть в футбол с Полатом','ca_last','ball'],['Посидеть на ступенях и поговорить','ca_last']]);
+// --- Исмира ---
+sc('ci_in','entr',['|Вы идёте по двору колледжа вчетвером. Асфальт блестит от дождя, у входа стоит старая берёза с жёлтыми листьями.','Айым|Стойте, фото на ступеньках! Свет сегодня идеальный!','!late?Айлин|Девочки, звонок через три минуты. Быстро в кабинет!','late?Айлин|Нет, уже не быстро. Звонок был двадцать минут назад. Но в журнал опоздавших я вас, так и быть, не запишу.','!late?Айлин|Успели! Я уж думала, что мы всё пропустили.','!late?Адлан|Девчонки, привет! Исмира, ты с нами сегодня в паре на лабораторной?','!late?Исмира|С вами, конечно. Только Полату код не показывайте, он опять спишет.','!late?Полат|Эй, я всё слышу!'],[['Подняться по лестнице','ci_st']]);
+sc('ci_st','stairs',['|На лестнице толпа: кто-то спускается с кружкой кофе, кто-то бежит наверх, прижимая к груди папки.','Аялым|Слышали? Говорят, в субботу вечер колледжа будет с живой музыкой.','Айлин|А я реферат в рюкзаке нашла! Смятый, но целый.','Айым|Исмира, сфоткай нас на лестнице. Только вот здесь, где свет.'],[['Идти в кабинет','ci0']]);
+sc('ci_yard','yardc',['|Большая перемена. Двор колледжа гудит: кто-то играет в мяч, кто-то фотографируется на фоне стены с граффити.','Айым|Исмира, давай общее фото! Айлин, не смотри в тетрадь!','Айлин|Это не тетрадь. Это бронежилет.','Аялым|У меня телефон садится, быстрее!','org?Айлин|Исмира, организаторы собираются на репетицию вечера. Ты с нами?'],[['Сфотографироваться с девочками','ci_last','photo'],['Повторить материал к зачёту','ci_last','prep']]);
+// --- Сыпатай и Айша ---
+sc('cs_in','entr',['|Колледж стоит у гимназии, за невысоким забором. Во дворе уже толпятся ребята из соседних сёл, пахнет мокрой листвой и чьими-то пирожками.','late?|Двор почти пуст: звонок давно прозвенел.','met?|У ворот ты замечаешь знакомый тубус: Айша стоит там же и нервно оглядывается.','!met?|Ты поправляешь рюкзак. Старшекурсники держатся отдельно: у них свои разговоры, свои проекты.','!late?Адлан|Сыпатай! Иди к нам, мы заняли тебе место у окна!','!late?Полат|Опять один пришёл? Мы же одна группа!'],[['Войти и подняться по лестнице','cs_st']]);
+sc('cs_st','stairs',['|Лестница узкая и скрипучая. На стенах висят макеты и чертежи третьекурсников: дома, мосты, целые кварталы из картона.','Сыпатай|Вот это да… Такое делают прямо здесь?','Сыпатай|Мой проект называется «проект». Их проект называется «проект». Но у них хотя бы стоит.','|Где-то наверху звякает ключ в замке, и сверху доносится запах свежей краски.'],[['Идти в коридор','cs0']]);
+sc('cs_carry','stairs',['carry?|Вы несёте макет вдвоём по лестнице: Айша спереди, ты сзади. Картон скрипит, проволочные деревья дрожат.','!carry?|Айша несёт макет сама, оглядываясь на каждую ступень.','Айша|Только не наклоняй! Там окошки из пластика, они лопнут!','|До кабинета защиты остаётся два пролёта.'],[['Нести аккуратно, шаг за шагом','cs_def','careful'],['Поторопиться','cs_def']]);
+CH.a='ca_in';CH.i='ci_in';CH.s='cs_in';
+cd('ca_in','Колледж · 8:20');cd('ca_st','Лестница');cd('ca0','Первая пара · 8:30');cd('ca_break','Перемена · 10:50');cd('ca_lunch','Обед · 13:00');cd('ca_yard','Большая перемена · 14:20');cd('ca_last','Последняя пара · 15:00');
+cd('ci_in','Колледж · 8:20');cd('ci_st','Лестница');cd('ci0','Первая пара · 8:30');cd('ci_break','Перемена · 10:50');cd('ci_lunch','Обед · 13:00');cd('ci_yard','Большая перемена · 14:20');cd('ci_last','Зачёт · 15:00');
+cd('cs_in','Колледж · 8:20');cd('cs_st','Лестница');cd('cs0','Коридор · 8:30');cd('cs_break','Перемена · 10:50');cd('cs_lunch','Обед · 13:00');cd('cs_carry','Лестница · 13:40','13:40');cd('cs_def','Защита макета · 14:00','14:00');cd('cs_last','Конец пар · 15:40');
+Object.keys(S).forEach(function(k){if(/^c[ais]/.test(k)&&S[k].bg&&!S[k].tm)S[k].tm=BG[S[k].bg][3]});
+S.ca_yard.tm='14:20';S.ci_yard.tm='14:20';S.ca_last.tm='15:00';S.ci_last.tm='15:00';
+
+// ====== ГРУППА П-21: все друзья ======
+var GCHAT={a:'Вечером в чате группы П-21 все семеро писали одновременно: Аялым скинула конспект, Айым шутила про баги, Айлин присылала стикеры с котом, Исмира отправила мем про циклы, а Полат клялся, что завтра сам напишет лабораторную, и никто ему не поверил. Сыпатай ответил одним словом: «Сдадим вместе». Айым добавила: «Если завтра меня не будет на паре, считайте, что я пала смертью храбрых в борьбе с дедлайном». Полат ответил: «Тогда твои конспекты по наследству мои». Адлан поставил на это сообщение реакцию «бессмертно».',
+i:'Вечером в чате группы П-21 было шумно: Адлан с Полатом спорили, чей код короче, Сыпатай присылал смешные скриншоты ошибок, а Айым с Аялым сравнивали свои пятёрки и делились планами на субботу. Ты смотрела на экран и улыбалась: такой группы нет больше нигде. Аялым написала: «Если завтра провалюсь, похороните меня в обнимку с конспектом». Адлан ответил: «Похороним. Но сначала дашь списать». Полат тут же написал: «Я первый в очереди на конспект». Все отправили ему стикер с кладбищем.',
+s:'Вечером в чате группы П-21 ребята звали тебя на субботний вечер колледжа. Адлан написал: «Сыпатай, без тебя не начинаем», Айлин прислала стикер с котом, Исмира спросила, какую музыку ты любишь, а Полат добавил, что у него наконец запустилась программа, и, кажется, он написал её сам. Ты ответил: «Приду», и поймал себя на том, что ждёшь субботы. Потом пришло сообщение от Полата: «Если завтра не сдам, считайте меня героем. Завещаю вам свой код, он всё равно не работает». Адлан ответил: «Поставим тебе памятник из твоих же баг-репортов».'};
+Object.keys(S).forEach(function(k){if(/^f_[ais]_/.test(k))S[k].text+='<br><br>'+GCHAT[k[2]]});
+HEROES.a[2]='Второй курс, группа П-21. Друг Полат, север села, дорога к колледжу.';HEROES.i[2]='Староста группы П-21. Дом у больницы, подруги или такси.';HEROES.s[2]='Второй курс, группа П-21. Идёт один, но группа всегда ждёт.';
+// ====== ВЕРСИЯ 3: реалистичная графика, портреты, новые концовки ======
+var _mk=mk,pc=0;
+function enh(o,kind){
+  var w=o.width,h=o.height,g=o.getContext('2d'),r=R(w*7+kind.length),out=!IN.test(kind),i,x;
+  g.save();g.globalCompositeOperation='lighter';
+  var sx=out?w*.2:w*.78;
+  for(i=0;i<5;i++){var a=sx+i*w*.07,gr=g.createLinearGradient(a,0,a-w*.25,h);gr.addColorStop(0,'rgba(255,214,150,.15)');gr.addColorStop(1,'rgba(255,214,150,0)');g.fillStyle=gr;g.beginPath();g.moveTo(a,0);g.lineTo(a+w*.035,0);g.lineTo(a-w*.15,h);g.lineTo(a-w*.26,h);g.fill()}
+  g.restore();
+  if(out){
+    var y0=h*.76;g.save();g.beginPath();g.rect(0,y0,w,h-y0);g.clip();g.globalAlpha=.28;g.translate(0,2*y0);g.scale(1,-1);g.drawImage(o,0,0);g.restore();
+    for(i=0;i<6;i++){var px=r()*w,py=h*(.86+r()*.1),pg=g.createRadialGradient(px,py,0,px,py,60);pg.addColorStop(0,'rgba(200,215,240,.22)');pg.addColorStop(1,'rgba(200,215,240,0)');g.save();g.translate(px,py);g.scale(1,.18);g.translate(-px,-py);g.fillStyle=pg;g.fillRect(px-60,py-60,120,120);g.restore()}
+    if(kind!='trees'){
+      [.1,.64].forEach(function(f){var p=w*f;g.fillStyle='rgba(6,7,12,.93)';g.fillRect(p,h*.2,5,h*.68);g.fillRect(p-26,h*.26,57,4);g.fillRect(p-18,h*.31,41,3)});
+      g.strokeStyle='rgba(6,7,12,.7)';g.lineWidth=1.2;
+      for(i=0;i<3;i++){g.beginPath();g.moveTo(w*.1-24+i*24,h*.265);g.quadraticCurveTo(w*.37,h*(.36+i*.01),w*.64-24+i*24,h*.265);g.quadraticCurveTo(w*.9,h*.35,w+20,h*.28);g.stroke()}
+    }
+    g.fillStyle='rgba(3,4,8,.95)';
+    for(x=0;x<w;x+=5+r()*7){var gh=10+r()*30;g.beginPath();g.moveTo(x,h);g.lineTo(x+2,h-gh);g.lineTo(x+5,h);g.fill()}
+  }
+  var t=document.createElement('canvas');t.width=Math.max(2,w>>3);t.height=Math.max(2,h>>3);t.getContext('2d').drawImage(o,0,0,t.width,t.height);
+  g.save();g.imageSmoothingEnabled=true;g.globalCompositeOperation='soft-light';g.globalAlpha=.8;g.drawImage(t,0,0,w,h);g.globalCompositeOperation='lighter';g.globalAlpha=.07;g.drawImage(t,0,0,w,h);
+  var cg=g.createLinearGradient(0,0,0,h);cg.addColorStop(0,'rgba(60,90,150,.35)');cg.addColorStop(1,'rgba(255,150,70,.25)');g.globalCompositeOperation='overlay';g.fillStyle=cg;g.fillRect(0,0,w,h);g.restore();
+  var gc=document.createElement('canvas');gc.width=gc.height=96;var gg=gc.getContext('2d'),id=gg.createImageData(96,96);
+  for(i=0;i<id.data.length;i+=4){var v=r()*255;id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=20}
+  gg.putImageData(id,0,0);g.fillStyle=g.createPattern(gc,'repeat');g.fillRect(0,0,w,h);
+  var vg=g.createRadialGradient(w/2,h/2,h*.3,w/2,h/2,w*.75);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=vg;g.fillRect(0,0,w,h);
+}
+mk=function(w,h,kind,c){var o=_mk(w,h,kind,c);try{enh(o,kind=='crowd'?'college':kind)}catch(e){}return o};
+
+function man(g,x,y,t,s,d){
+  g.save();g.translate(x,y);if(d<0)g.scale(-1,1);
+  g.fillStyle='rgba(0,0,0,.4)';g.beginPath();g.ellipse(0,2*s,28*s,5*s,0,0,7);g.fill();
+  g.fillStyle='#07080e';g.strokeStyle='#07080e';g.lineCap='round';g.lineWidth=8*s;
+  var sw=Math.sin(t/6)*16*s;
+  var q=Math.cos(t/6);g.beginPath();g.moveTo(0,-40*s);g.lineTo(sw,-Math.max(0,q)*9*s);g.moveTo(0,-40*s);g.lineTo(-sw,-Math.max(0,-q)*9*s);g.stroke();
+  g.fillRect(-10*s,-80*s,20*s,42*s);g.beginPath();g.arc(0,-91*s,9.5*s,0,7);g.fill();
+  g.fillRect(-19*s,-78*s,9*s,28*s);
+  g.lineWidth=5*s;g.beginPath();g.moveTo(0,-74*s);g.lineTo(-sw*.7,-48*s);g.moveTo(0,-74*s);g.lineTo(sw*.7,-48*s);g.stroke();
+  g.strokeStyle='rgba(255,190,120,.4)';g.lineWidth=1.6*s;g.beginPath();g.moveTo(10*s,-80*s);g.lineTo(10*s,-40*s);g.moveTo(8*s,-97*s);g.quadraticCurveTo(12*s,-91*s,8*s,-84*s);g.stroke();
+  g.restore()}
+
+function portrait(w){
+  var f=F.indexOf(w)>=0,old=w=='Старичок',h=0,i,u='q'+(pc++);
+  for(i=0;i<w.length;i++)h=(h*31+w.charCodeAt(i))%360;
+  var sk=[['#f0cfae','#c99a78','#6b4530'],['#e3b890','#b98660','#5a3a28'],['#d4a07a','#a67150','#4d3020']][h%3],
+  hr=old?'#c9c9cf':(f?['#120b09','#24150f','#1a100c'][h%3]:['#0e0a08','#201510'][h%2]),
+  cl='hsl('+h+',26%,26%)',cl2='hsl('+h+',30%,12%)',lip=f?'#b0605a':'#8c5246',P='M14 260Q20 178 100 168Q180 178 186 260Z';
+  var s='<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg"><defs>'
+  +'<radialGradient id="'+u+'f" cx=".38" cy=".38" r=".8"><stop offset="0" stop-color="'+sk[0]+'"/><stop offset=".6" stop-color="'+sk[1]+'"/><stop offset="1" stop-color="'+sk[2]+'"/></radialGradient>'
+  +'<linearGradient id="'+u+'c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+cl+'"/><stop offset="1" stop-color="'+cl2+'"/></linearGradient>'
+  +'<linearGradient id="'+u+'s" x1="0" x2="1"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>'
+  +'<linearGradient id="'+u+'r" x1="0" x2="1"><stop offset="0" stop-color="#ffc882" stop-opacity=".5"/><stop offset=".25" stop-color="#ffc882" stop-opacity="0"/></linearGradient></defs>';
+  if(f)s+='<path d="M42 112Q34 235 58 252L142 252Q168 225 158 112Q152 36 100 34Q48 36 42 112Z" fill="'+hr+'"/>';
+  s+='<path d="'+P+'" fill="url(#'+u+'c)"/><path d="M82 168L100 205L118 168Z" fill="#e8e4ee" opacity=".85"/><path d="M82 168L100 205L100 188Z" fill="#fff" opacity=".4"/>'
+  +'<path d="M86 138h28v36Q100 190 86 174Z" fill="'+sk[1]+'"/><path d="M86 160Q100 172 114 160V174Q100 186 86 174Z" fill="#000" opacity=".28"/>'
+  +'<ellipse cx="62" cy="112" rx="6" ry="11" fill="'+sk[1]+'"/><ellipse cx="138" cy="112" rx="6" ry="11" fill="'+sk[2]+'"/>'
+  +'<ellipse cx="100" cy="106" rx="38" ry="47" fill="url(#'+u+'f)"/>';
+  [78,122].forEach(function(x){s+='<ellipse cx="'+x+'" cy="106" rx="8" ry="4.6" fill="#f4efe8"/><circle cx="'+x+'" cy="106" r="3.8" fill="#3a2518"/><circle cx="'+x+'" cy="106" r="1.8" fill="#050403"/><circle cx="'+(x+1.4)+'" cy="104.6" r="1.1" fill="#fff"/><path d="M'+(x-9)+' 105Q'+x+' 99 '+(x+9)+' 105" stroke="'+hr+'" fill="none" stroke-width="2.2"/><path d="M'+(x-10)+' 95Q'+x+' 90 '+(x+10)+' 94" stroke="'+hr+'" fill="none" stroke-width="3" stroke-linecap="round"/>'});
+  s+='<path d="M100 110Q95 128 99 131Q104 133 106 130" stroke="#5a3322" stroke-opacity=".45" fill="none" stroke-width="2"/>'
+  +'<path d="M89 144Q100 150 111 144Q100 140 89 144Z" fill="'+lip+'"/><path d="M90 144Q100 147 110 144" stroke="#000" stroke-opacity=".25" fill="none"/>'
+  +(f?'<ellipse cx="74" cy="130" rx="8" ry="5" fill="#e07a7a" opacity=".22"/><ellipse cx="126" cy="130" rx="8" ry="5" fill="#e07a7a" opacity=".18"/>':'')
+  +(f?'<path d="M60 108Q54 52 100 48Q146 52 140 108Q128 76 112 70Q90 84 60 108Z" fill="'+hr+'"/>':'<path d="M60 100Q56 50 100 50Q146 50 140 100Q132 74 104 70Q84 78 60 100Z" fill="'+hr+'"/>')
+  +'<path d="M72 66Q96 54 126 66" stroke="#fff" stroke-opacity=".18" fill="none" stroke-width="3"/>'
+  +'<ellipse cx="100" cy="106" rx="38" ry="47" fill="url(#'+u+'s)"/><path d="'+P+'" fill="url(#'+u+'r)"/></svg>';
+  return s}
+
+// --- Новые концовки: по две на каждого героя ---
+en('f_a_derby','dusk','Матч до темноты','Во дворе вы с Полатом доиграли ещё до звонка, а после пар к вам присоединилась вся группа. Ворота сделали из рюкзаков, мяч то и дело тонул в луже, а Аялым судила, не скрывая, что болеет за обоих.<br><br>Счёт вышел 7:7, и компот пришлось покупать вместе. Исмира махнула рукой из окна второго этажа: ей тоже захотелось выйти.<br><br>Домой Адлан возвращался в мокрой куртке, с грязными коленями и странной лёгкостью. Иногда день удаётся оттого, что ты просто побегал.','⚽');
+en('f_a_tutor','dusk','Репетитор Полата','Лабораторная Полата за обедом ожила: цикл наконец заработал, и Полат хлопнул по клавиатуре так, что соседи обернулись.<br><br>После звонка Адлан задержался у преподавателя, и тот сказал: «Вы объясняете лучше, чем я». Это прозвучало как шутка, но запомнилось всерьёз.<br><br>Вечером Полат прислал скриншот зелёных тестов с подписью «Мой репетитор». Адлан улыбнулся и подумал, что объяснять другому значит понимать вдвое глубже.','💻');
+en('f_i_photo','dusk','Кадр дня','Айым сняла вас на фоне стены с граффити, и снимок вышел таким живым, что кураторша попросила его для стенда колледжа. Айлин на нём смеётся с закрытыми глазами, Аялым держит булочку, как трофей.<br><br>Зачёт Исмира сдала на «отлично», как всегда, и почти без напряжения. Зато вечером под фото набралась сотня лайков, а Полат переименовал снимок в «Лучшую пару года».<br><br>Она долго смотрела на экран и думала, что такие кадры потом вспоминаются лучше любых оценок.','📸');
+en('f_i_notes','dusk','Записки с последней парты','Записка для Айлин ходила по ряду всю первую пару. Внутри были шутки про преподавателя, рисунок кота и тайный план на субботу. Преподаватель сделал вид, что ничего не заметил.<br><br>К концу пары Айлин ответила целой страницей, и вы вдвоём прыснули в рукав. Оценок это не улучшило, зато вы стали ближе.<br><br>Вечером Исмира достала записку из кармана и положила между страниц тетради. Когда-нибудь будет приятно её перечитать.','✉️');
+en('f_s_speech','dusk','Речь без бумажки','Вы дважды прогнали защиту в пустой аудитории: Сыпатай изображал комиссию с самым строгим лицом, Айша смеялась и сбивалась. На третий раз слова легли ровно.<br><br>Комиссия слушала молча, а потом спросила про реку под домом. Айша ответила так, будто рассказывала о собственном дворе. Ты стоял у двери и впервые за день не знал, куда деть руки.<br><br>На остановке она сказала, что запомнит, как её слушали не перебивая. Ты кивнул и понял, что запомнишь это тоже.','🎤');
+en('f_s_model','dusk','Запасное деревце','Ты нёс макет шаг за шагом, и ни одно проволочное деревце не дрогнуло. Айша заметила это только на защите, когда комиссия подошла ближе, а поправлять ничего не пришлось.<br><br>После пар она протянула тебе крошечную проволочную ёлочку: «Запасная. Она тоже видела, как ты шёл по лестнице». Ты положил её в карман, как что-то хрупкое.<br><br>Дома ёлочка встала у монитора. Ты не мог объяснить, почему улыбаешься, глядя на кусок проволоки.','🌲');
+S.ca_end.pick=function(){return G.help&&G.friend?'f_a_best':G.kvn?'f_a_kvn':(G.ball&&!G.cheat&&!G.cheat2)?'f_a_derby':(G.help&&!G.cheat&&!G.cheat2)?'f_a_tutor':(G.cheat||G.cheat2)?'f_a_cheat':'f_a_calm'};
+S.ci_end.pick=function(){return G.friend&&G.org?'f_i_party':G.friend?'f_i_friends':G.photo?'f_i_photo':G.notes?'f_i_notes':G.talk?'f_i_talk':'f_i_study'};
+S.cs_end.pick=function(){return G.stay&&G.walk?'f_s_close':(G.rehearse&&G.stay)?'f_s_speech':(G.careful&&G.carry)?'f_s_model':(G.stay||G.walk||G.carry)?'f_s_friend':'f_s_alone'};
+['f_a_derby','f_a_tutor','f_i_photo','f_i_notes','f_s_speech','f_s_model'].forEach(function(k){S[k].text+='<br><br>'+GCHAT[k[2]]});
+// ====== ВЕРСИЯ 4: у каждого свой облик ======
+F.push('Староста');
+var SKN=[['#f0cfae','#c99a78','#6b4530'],['#e3b890','#b98660','#5a3a28'],['#d4a07a','#a67150','#4d3020']];
+var PR={
+'Адлан':{k:0,h:'#14100d',st:'side',fw:36,fh:49,br:3.6,cl:215},
+'Полат':{k:1,h:'#3a2312',st:'curly',fw:42,fh:45,br:2.4,cl:28,hood:1},
+'Сыпатай':{k:2,h:'#0c0908',st:'buzz',fw:35,fh:51,br:3,cl:150,g:1},
+'Препод':{k:0,h:'#7a7a80',st:'side',fw:39,fh:48,br:3.2,cl:230,g:1,sb:.16,tie:1,mu:1},
+'Таксист':{k:2,h:'#1d1612',st:'cap',fw:42,fh:46,br:4,cl:20,sb:.32,mu:1},
+'Охранник':{k:1,h:'#222',st:'cap',fw:43,fh:47,br:4,cl:215,sb:.22,uni:1},
+'Старичок':{k:0,h:'#d6d6da',st:'bald',fw:36,fh:47,br:3,cl:35,wr:1,g:1}};
+function portrait(w){
+  var f=F.indexOf(w)>=0,h=0,i,u='q'+(pc++),p=PR[w];
+  for(i=0;i<w.length;i++)h=(h*31+w.charCodeAt(i))%360;
+  p=p||{k:h%3,h:f?['#120b09','#24150f','#1a100c'][h%3]:'#0e0a08',st:f?['part','bangs','part'][h%3]:'side',fw:f?36:38,fh:f?48:47,br:f?2.6:3.2,cl:h};
+  var sk=SKN[p.k],hr=p.h,fw=p.fw,fh=p.fh,L=100-fw-2,Rr=100+fw+2,T=106-fh-4,st=p.st,ex=Math.round(fw*.57),
+  cl='hsl('+p.cl+',26%,26%)',cl2='hsl('+p.cl+',30%,12%)',lip=f?'#b0605a':'#8c5246',P='M14 260Q20 178 100 168Q180 178 186 260Z';
+  var s='<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg"><defs>'
+  +'<radialGradient id="'+u+'f" cx=".38" cy=".38" r=".8"><stop offset="0" stop-color="'+sk[0]+'"/><stop offset=".6" stop-color="'+sk[1]+'"/><stop offset="1" stop-color="'+sk[2]+'"/></radialGradient>'
+  +'<linearGradient id="'+u+'c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+cl+'"/><stop offset="1" stop-color="'+cl2+'"/></linearGradient>'
+  +'<linearGradient id="'+u+'s" x1="0" x2="1"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>'
+  +'<linearGradient id="'+u+'r" x1="0" x2="1"><stop offset="0" stop-color="#ffc882" stop-opacity=".5"/><stop offset=".25" stop-color="#ffc882" stop-opacity="0"/></linearGradient></defs>';
+  if(f)s+='<path d="M42 112Q34 235 58 252L142 252Q168 225 158 112Q152 36 100 34Q48 36 42 112Z" fill="'+hr+'"/>';
+  if(p.hood)s+='<path d="M24 230Q30 150 100 142Q170 150 176 230Z" fill="hsl('+p.cl+',24%,16%)"/>';
+  s+='<path d="'+P+'" fill="url(#'+u+'c)"/>';
+  if(p.hood)s+='<path d="M92 176v34M108 176v34" stroke="#d8d4cc" stroke-width="2.4" stroke-linecap="round"/>';
+  else s+='<path d="M82 168L100 205L118 168Z" fill="'+(p.uni?'#2a3350':'#e8e4ee')+'" opacity=".85"/><path d="M82 168L100 205L100 188Z" fill="#fff" opacity=".35"/>';
+  if(p.tie)s+='<path d="M95 180L105 180L108 230L100 240L92 230Z" fill="#7a2330"/>';
+  if(p.uni)s+='<rect x="38" y="196" width="26" height="8" rx="2" fill="#c9a24a"/><rect x="136" y="196" width="26" height="8" rx="2" fill="#c9a24a"/>';
+  s+='<path d="M86 138h28v36Q100 190 86 174Z" fill="'+sk[1]+'"/><path d="M86 160Q100 172 114 160V174Q100 186 86 174Z" fill="#000" opacity=".28"/>'
+  +'<ellipse cx="'+(L+3)+'" cy="112" rx="6" ry="11" fill="'+sk[1]+'"/><ellipse cx="'+(Rr-3)+'" cy="112" rx="6" ry="11" fill="'+sk[2]+'"/>'
+  +'<ellipse cx="100" cy="106" rx="'+fw+'" ry="'+fh+'" fill="url(#'+u+'f)"/>';
+  if(p.sb)s+='<path d="M'+(L+6)+' 116Q'+(L+8)+' '+(106+fh)+' 100 '+(106+fh)+'Q'+(Rr-8)+' '+(106+fh)+' '+(Rr-6)+' 116Q100 134 '+(L+6)+' 116Z" fill="#000" opacity="'+p.sb+'"/>';
+  if(p.wr)s+='<path d="M80 80Q100 75 120 80M82 88Q100 84 118 88M70 120Q74 126 72 134M130 120Q126 126 128 134" stroke="#5a3a28" stroke-opacity=".35" fill="none" stroke-width="1.6"/>';
+  [100-ex,100+ex].forEach(function(x){s+='<ellipse cx="'+x+'" cy="106" rx="8" ry="4.6" fill="#f4efe8"/><circle cx="'+x+'" cy="106" r="3.8" fill="#3a2518"/><circle cx="'+x+'" cy="106" r="1.8" fill="#050403"/><circle cx="'+(x+1.4)+'" cy="104.6" r="1.1" fill="#fff"/><path d="M'+(x-9)+' 105Q'+x+' 99 '+(x+9)+' 105" stroke="'+hr+'" fill="none" stroke-width="2.2"/><path d="M'+(x-10)+' 95Q'+x+' 90 '+(x+10)+' 94" stroke="'+hr+'" fill="none" stroke-width="'+p.br+'" stroke-linecap="round"/>'});
+  if(p.g)s+='<g fill="none" stroke="#14110f" stroke-width="2.2"><circle cx="'+(100-ex)+'" cy="106" r="12"/><circle cx="'+(100+ex)+'" cy="106" r="12"/><path d="M'+(100-ex+12)+' 105Q100 100 '+(100+ex-12)+' 105"/></g><circle cx="'+(100-ex-4)+'" cy="101" r="3" fill="#fff" opacity=".25"/>';
+  s+='<path d="M100 110Q95 128 99 131Q104 133 106 130" stroke="#5a3322" stroke-opacity=".45" fill="none" stroke-width="2"/>'
+  +(p.mu?'<path d="M86 141Q100 134 114 141Q100 139 86 141Z" fill="'+hr+'" stroke="'+hr+'" stroke-width="2.5"/>':'')
+  +'<path d="M89 145Q100 151 111 145Q100 141 89 145Z" fill="'+lip+'"/><path d="M90 145Q100 148 110 145" stroke="#000" stroke-opacity=".25" fill="none"/>'
+  +(f?'<ellipse cx="'+(100-ex+2)+'" cy="130" rx="8" ry="5" fill="#e07a7a" opacity=".22"/><ellipse cx="'+(100+ex-2)+'" cy="130" rx="8" ry="5" fill="#e07a7a" opacity=".18"/>':'');
+  if(st=='part')s+='<path d="M'+L+' 108Q'+(L-6)+' 52 100 48Q'+(Rr+6)+' 52 '+Rr+' 108Q128 76 112 70Q90 84 '+L+' 108Z" fill="'+hr+'"/>';
+  else if(st=='bangs')s+='<path d="M'+L+' 108Q'+(L-6)+' 50 100 46Q'+(Rr+6)+' 50 '+Rr+' 108Q'+(Rr-6)+' 84 100 86Q'+(L+6)+' 84 '+L+' 108Z" fill="'+hr+'"/>';
+  else if(st=='side')s+='<path d="M'+L+' 102Q'+(L-4)+' '+(T+4)+' 100 '+T+'Q'+(Rr+4)+' '+(T+4)+' '+Rr+' 102Q'+(Rr-8)+' 76 104 '+(T+22)+'Q84 '+(T+30)+' '+L+' 102Z" fill="'+hr+'"/>';
+  else if(st=='buzz')s+='<path d="M'+(L+2)+' 96Q'+L+' '+(T+6)+' 100 '+(T+2)+'Q'+Rr+' '+(T+6)+' '+(Rr-2)+' 96Q'+(Rr-10)+' 80 100 '+(T+14)+'Q'+(L+10)+' 80 '+(L+2)+' 96Z" fill="'+hr+'"/>';
+  else if(st=='curly'){s+='<path d="M'+(L+2)+' 98Q'+L+' '+(T+8)+' 100 '+(T+4)+'Q'+Rr+' '+(T+8)+' '+(Rr-2)+' 98Q'+(Rr-8)+' 78 100 '+(T+16)+'Q'+(L+8)+' 78 '+(L+2)+' 98Z" fill="'+hr+'"/>';for(i=0;i<9;i++){var an=Math.PI*(1.05+i*.113);s+='<circle cx="'+(100+Math.cos(an)*(fw+1)).toFixed(1)+'" cy="'+(100+Math.sin(an)*(fh-1)).toFixed(1)+'" r="'+(10+i%3*2)+'" fill="'+hr+'"/>'}}
+  else if(st=='bald')s+='<path d="M'+(L+3)+' 104Q'+(L-2)+' 90 '+(L+6)+' 76Q'+(L+10)+' 90 '+(L+12)+' 106Z" fill="'+hr+'"/><path d="M'+(Rr-3)+' 104Q'+(Rr+2)+' 90 '+(Rr-6)+' 76Q'+(Rr-10)+' 90 '+(Rr-12)+' 106Z" fill="'+hr+'"/><ellipse cx="92" cy="70" rx="10" ry="5" fill="#fff" opacity=".18"/>';
+  else if(st=='cap')s+='<path d="M'+(L-2)+' 90Q'+L+' '+(T-8)+' 100 '+(T-8)+'Q'+(Rr)+' '+(T-8)+' '+(Rr+2)+' 90Z" fill="hsl('+p.cl+',22%,18%)"/><ellipse cx="100" cy="91" rx="'+(fw+8)+'" ry="5" fill="hsl('+p.cl+',22%,12%)"/>';
+  if(st!='cap'&&st!='bald')s+='<path d="M72 66Q96 54 126 66" stroke="#fff" stroke-opacity=".16" fill="none" stroke-width="3"/>';
+  s+='<ellipse cx="100" cy="106" rx="'+fw+'" ry="'+fh+'" fill="url(#'+u+'s)"/><path d="'+P+'" fill="url(#'+u+'r)"/></svg>';
+  return s}
+// ====== ВЕРСИЯ 5: больше анимации, объектов и красивое меню ======
+var _base=_mk;
+_mk=function(w,h,kind,c){var o=_base(w,h,kind,c);try{objs(o,kind=='crowd'?'college':kind)}catch(e){}return o};
+function objs(o,kind){
+  var w=o.width,h=o.height,g=o.getContext('2d'),r=R(w*3+kind.length*13),x,i,j,gy=h*.84;
+  if(!IN.test(kind)){
+    for(i=0;i<3;i++){x=r()*w;g.fillStyle='rgba(6,8,12,.9)';g.fillRect(x-2,gy-h*.3,4,h*.3);g.beginPath();g.ellipse(x,gy-h*.42,w*.016+6,h*.2,0,0,7);g.fill()}
+    if(kind!='trees'){x=w*(.3+r()*.4);g.fillStyle='rgba(8,9,15,.95)';g.beginPath();g.moveTo(x-44,gy);g.lineTo(x-44,gy-16);g.lineTo(x-26,gy-18);g.lineTo(x-16,gy-32);g.lineTo(x+18,gy-32);g.lineTo(x+30,gy-18);g.lineTo(x+46,gy-14);g.lineTo(x+46,gy);g.fill();
+      g.beginPath();g.arc(x-24,gy,8,0,7);g.arc(x+26,gy,8,0,7);g.fill();var hl=g.createRadialGradient(x+48,gy-10,0,x+48,gy-10,40);hl.addColorStop(0,'rgba(255,230,160,.6)');hl.addColorStop(1,'rgba(255,230,160,0)');g.fillStyle=hl;g.fillRect(x+8,gy-50,90,80)}
+    g.fillStyle='rgba(10,12,20,.9)';g.fillRect(0,gy-20,w,3);g.fillRect(0,gy-9,w,3);
+    for(x=0;x<w;x+=13){g.beginPath();g.moveTo(x,gy+2);g.lineTo(x,gy-26);g.lineTo(x+3,gy-30);g.lineTo(x+6,gy-26);g.lineTo(x+6,gy+2);g.fill()}
+    for(i=0;i<8;i++){x=r()*w;g.fillStyle='rgba(5,8,10,.9)';for(j=0;j<4;j++){g.beginPath();g.arc(x+j*9,gy+4-(j%2)*6,10+j%2*4,0,7);g.fill()}}
+  }else if(kind=='hall'||kind=='stairs'){
+    for(x=0;x<w*.28;x+=w*.05)[x,w-x-w*.045].forEach(function(lx){g.fillStyle='rgba(30,38,60,.9)';g.fillRect(lx,h*.3,w*.045,h*.5);g.fillStyle='rgba(120,140,190,.25)';g.fillRect(lx+4,h*.34,w*.045-8,3)});
+  }else{
+    var cx=w*.68,cy=h*.08;g.fillStyle='rgba(235,230,215,.85)';g.beginPath();g.arc(cx,cy+14,14,0,7);g.fill();g.strokeStyle='#14110f';g.lineWidth=2;g.beginPath();g.moveTo(cx,cy+14);g.lineTo(cx+7,cy+10);g.moveTo(cx,cy+14);g.lineTo(cx,cy+3);g.stroke();
+    g.fillStyle='rgba(8,12,10,.9)';g.fillRect(w*.94,h*.5,10,h*.2);g.fillStyle='rgba(20,70,40,.85)';for(i=0;i<5;i++){g.beginPath();g.ellipse(w*.945+i*2-4,h*.48-i*3,6,16,i-2,0,7);g.fill()}
+  }
+}
+var raf2;
+var _sc=scene;
+scene=function(box,kind,c,fo){
+  cancelAnimationFrame(raf2);_sc(box,kind,c,fo);
+  var cv2=document.createElement('canvas');cv2.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1';
+  box.insertBefore(cv2,box.children[1]||null);
+  requestAnimationFrame(function(){
+    var w=cv2.width=box.clientWidth,h=cv2.height=box.clientHeight,g=cv2.getContext('2d'),t=0,i,k,out=!IN.test(kind),hd=box.className=='hd',gy=h*.86,
+    St=[],Sp=[],Dm=[];
+    for(i=0;i<45;i++)St.push([Math.random()*w,Math.random()*h*.4,Math.random()*6]);
+    for(i=0;i<14;i++)Sp.push({x:Math.random()*w,a:Math.random()*80});
+    for(i=0;i<36;i++)Dm.push({x:Math.random()*w,y:Math.random()*h,v:.1+Math.random()*.3,p:Math.random()*6});
+    (function loop(){
+      if(!cv2.isConnected)return;t++;g.clearRect(0,0,w,h);
+      if(hd)St.forEach(function(s){g.fillStyle='rgba(255,245,220,'+(.35+.35*Math.sin(t/20+s[2]))+')';g.fillRect(s[0],s[1],1.6,1.6)});
+      if(hd){var mg=g.createRadialGradient(w*.82,h*.2,0,w*.82,h*.2,70);mg.addColorStop(0,'rgba(255,240,200,.9)');mg.addColorStop(.18,'rgba(255,240,200,.85)');mg.addColorStop(.19,'rgba(255,240,200,.18)');mg.addColorStop(1,'rgba(255,240,200,0)');g.fillStyle=mg;g.fillRect(w*.82-70,h*.2-70,140,140)}
+      if(out){
+        for(i=0;i<4;i++){var cx=((t*.14*(1+i*.35)+i*w*.33)%(w+360))-180,cy=h*(.08+i*.06);for(k=0;k<3;k++){var cg=g.createRadialGradient(cx+k*50,cy,0,cx+k*50,cy,70);cg.addColorStop(0,'rgba(205,212,235,.13)');cg.addColorStop(1,'rgba(205,212,235,0)');g.fillStyle=cg;g.fillRect(cx+k*50-70,cy-40,140,80)}}
+        [.2,.52,.8].forEach(function(f,n){for(i=0;i<7;i++){var a=(t+i*17+n*31)%120,px=w*f+Math.sin(a/12)*6+a*.3,py=h*.6-a*.75;g.fillStyle='rgba(190,195,210,'+(.2*(1-a/120))+')';g.beginPath();g.arc(px,py,3+a*.1,0,7);g.fill()}});
+        if(fo=='rain')Sp.forEach(function(p){p.a+=1.2;if(p.a>26){p.a=0;p.x=Math.random()*w}g.strokeStyle='rgba(200,215,240,'+(.4*(1-p.a/26))+')';g.beginPath();g.ellipse(p.x,gy+10+(p.x%12),p.a*.5,p.a*.14,0,0,7);g.stroke()});
+        if(kind!='trees'&&!hd){
+          var dx=((t*1.3)%(w+160))-80;g.save();g.translate(w-dx,gy+16);g.scale(-1,1);g.fillStyle='rgba(5,6,10,.92)';g.strokeStyle='rgba(5,6,10,.92)';g.lineWidth=3;
+          g.beginPath();g.ellipse(0,-14,16,7,0,0,7);g.fill();g.beginPath();g.arc(17,-20,6,0,7);g.fill();g.beginPath();g.moveTo(-16,-16);g.quadraticCurveTo(-24,-24,-22,-28+Math.sin(t/3)*4);g.stroke();
+          var ls=Math.sin(t/4)*8;g.beginPath();g.moveTo(10,-10);g.lineTo(10+ls,0);g.moveTo(-10,-10);g.lineTo(-10-ls,0);g.stroke();g.restore();
+          man(g,((t*1.05+w*.3)%(w+120))-60,gy+10,t,.62,1)}
+        var sw=Math.sin(t/55)*.025;[.03,.96].forEach(function(f){g.save();g.translate(w*f,h);g.rotate(sw*(f<.5?1:-1));g.fillStyle='rgba(3,5,8,.96)';g.fillRect(-3,-h*.45,6,h*.45);g.beginPath();g.ellipse(0,-h*.5,w*.03+10,h*.22,0,0,7);g.fill();g.restore()});
+        var lx=w*.78,pl=.7+.3*Math.sin(t/13)*Math.sin(t/4.1),lg=g.createRadialGradient(lx,h*.38,0,lx,h*.38,60+pl*14);lg.addColorStop(0,'rgba(255,215,140,'+(.55*pl)+')');lg.addColorStop(1,'rgba(255,215,140,0)');g.fillStyle=lg;g.fillRect(lx-90,h*.38-90,180,180);
+        g.fillStyle='rgba(4,5,9,.95)';g.fillRect(lx-2,h*.38,4,gy-h*.38);g.fillRect(lx-10,h*.375,20,4);
+        for(i=0;i<3;i++){g.fillStyle='rgba(255,240,190,.8)';g.fillRect(lx+Math.cos(t/9+i*2)*(18+i*6),h*.38+Math.sin(t/7+i*2)*(14+i*4),1.8,1.8)}
+      }else{
+        var fl=.06+.05*Math.sin(t/7)*Math.sin(t/3.1),lm=g.createRadialGradient(w/2,0,0,w/2,0,h*.7);lm.addColorStop(0,'rgba(255,225,160,'+fl*2+')');lm.addColorStop(1,'rgba(255,225,160,0)');g.fillStyle=lm;g.fillRect(0,0,w,h);
+        Dm.forEach(function(d){d.y-=d.v;d.x+=Math.sin(t/60+d.p)*.3;if(d.y<0){d.y=h;d.x=Math.random()*w}g.fillStyle='rgba(255,236,190,'+(.25+.25*Math.sin(t/15+d.p))+')';g.beginPath();g.arc(d.x,d.y,1.2,0,7);g.fill()});
+        if(kind=='hall'||kind=='stairs'){g.globalAlpha=.55;man(g,((t*.58)%(w*.5+100))+w*.25-50,h*.62,t,.34,1);man(g,w*.75-((t*.51)%(w*.5+100)),h*.64,t+9,.3,-1);g.globalAlpha=1}
+      }
+      raf2=requestAnimationFrame(loop)})();
+  })};
+
+// --- Красивое главное меню ---
+var css=document.createElement('style');css.textContent='.menu h1{background:linear-gradient(90deg,#fff,#e9c46a 60%,#f4a261);-webkit-background-clip:text;background-clip:text;color:transparent;animation:rise .9s both}.ttl small{animation:rise .9s .1s both}.ttl p{margin:6px 0 0;color:#d6d2ea;font-size:15px;animation:rise .9s .25s both}'
++'@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}@keyframes glow{50%{box-shadow:0 0 28px -4px var(--ac)}}'
++'.gt{color:#e9c46a;letter-spacing:2px;font-size:13px;text-transform:uppercase;margin:16px 0 10px;display:flex;align-items:center;gap:10px}.gt::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(233,196,106,.5),transparent)}'
++'.gr{display:flex;gap:6px;overflow:auto;padding-bottom:4px}.gm{flex:1;min-width:58px;text-align:center;font-size:11px;color:#b9b6cf;animation:rise .7s both}.gm svg{width:100%;aspect-ratio:3/3.4;border-radius:10px;background:radial-gradient(circle at 50% 30%,#3a3f78,#12142a);border:1px solid rgba(233,196,106,.25);margin-bottom:3px}'
++'.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}'
++'.hc{--ac:#e9c46a;position:relative;display:flex;flex-direction:column;text-align:left;color:#f1eff8;background:linear-gradient(170deg,rgba(255,255,255,.09),rgba(255,255,255,.02));border:1px solid var(--ac);border-radius:16px;padding:0 0 14px;overflow:hidden;animation:rise .8s both;transition:transform .25s,box-shadow .25s}'
++'.hc:hover,.hc:focus-visible{transform:translateY(-8px) scale(1.02);box-shadow:0 14px 30px -10px var(--ac);outline:none}.hc .pt2{height:170px;background:radial-gradient(circle at 50% 35%,var(--ac),transparent 70%),linear-gradient(#232850,#0e1020);display:flex;justify-content:center;overflow:hidden}.hc .pt2 svg{height:100%;animation:br 3.6s ease-in-out infinite;transform-origin:bottom}'
++'.hc b{display:block;font-size:22px;font-weight:400;color:var(--ac);margin:12px 14px 2px}.hc small{display:block;margin:0 14px;color:#c9c6dc;font-size:14px;line-height:1.4}.pb{height:6px;margin:12px 14px 0;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}.pb i{display:block;height:100%;background:var(--ac);border-radius:3px}.hc em{margin:5px 14px 0;font-size:12px;color:#b9b6cf;font-style:normal}'
++'.hc::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.12) 50%,transparent 60%);transform:translateX(-120%);transition:transform .7s;pointer-events:none}.hc:hover::after{transform:translateX(120%)}';
+document.head.appendChild(css);
+var ACC={a:'#e05a5a',i:'#a06be0',s:'#4a90e2'};
+function menu(){
+  cancelAnimationFrame(raf);cancelAnimationFrame(raf2);clearInterval(timer);app.innerHTML='';
+  var m=el('div','menu'),hd=el('div','hd','<div class="ttl"><small>Шамалган · группа П-21 · пара в 8:30</small><h1>Дорога до колледжа</h1><p>Староста Исмира, её зам Айлин и отличники группы П-21. Полат тоже отличник, просто он просит списать.</p></div>'),l=el('div','list'),gr=el('div','gr'),cs=el('div','cards');
+  m.appendChild(hd);
+  ['Адлан','Полат','Исмира','Айлин','Аялым','Айым','Сыпатай'].forEach(function(n,i){var d=el('div','gm',portrait(n)+n+(n=='Исмира'?'<br>староста':n=='Айлин'?'<br>зам старосты':''));d.style.animationDelay=(.3+i*.08)+'s';gr.appendChild(d)});
+  l.appendChild(el('div','gt','Группа П-21'));l.appendChild(gr);l.appendChild(el('div','gt','Выбери героя'));
+  Object.keys(HEROES).forEach(function(k,i){
+    var h=HEROES[k],n=found(k),tt=total(k),b=el('button','hc','<div class="pt2">'+portrait(h[0])+'</div><b>'+h[0]+'</b><small>'+h[2]+'</small><div class="pb"><i style="width:'+Math.round(100*n/Math.max(1,tt))+'%"></i></div><em>Концовки: '+n+' / '+tt+'</em>');
+    b.style.setProperty('--ac',ACC[k]);b.style.animationDelay=(.5+i*.15)+'s';
+    b.onclick=function(){hero=k;G={};go(h[3])};cs.appendChild(b)});
+  l.appendChild(cs);l.insertAdjacentHTML('beforeend',MAP);m.appendChild(l);app.appendChild(m);
+  scene(hd,'village',['#141a33','#3b3556'],'rain')}
+F.push('Куратор');
+menu();
+</script>
+</body>
+</html>
