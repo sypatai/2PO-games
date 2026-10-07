@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кот-воришка 🐱</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="game-container">
+
+    <h1>🐾 Кот-воришка</h1>
+
+    <div class="info">
+        <span>⭐ Очки: <b id="score">0</b></span>
+        <span>❤️ Жизни: <b id="lives">3</b></span>
+        <span>🏆 Уровень: <b id="level">1</b></span>
+        <span>⏱️ Время: <b id="time">30</b></span>
+    </div>
+
+    <div id="game">
+
+        <!-- КОТ -->
+        <div id="cat">
+
+            <div class="cat-tail"></div>
+
+            <div class="cat-body">
+
+                <div class="ear left-ear"></div>
+                <div class="ear right-ear"></div>
+
+                <div class="cat-head">
+
+                    <div class="mask">
+
+                        <div class="eye left-eye"></div>
+                        <div class="eye right-eye"></div>
+
+                    </div>
+
+                    <div class="nose"></div>
+
+                    <div class="mouth">⌣</div>
+
+                </div>
+
+                <div class="cat-belly"></div>
+
+                <div class="paw left-paw"></div>
+                <div class="paw right-paw"></div>
+
+            </div>
+
+            <div id="bombs"></div>
+
+        </div>
+
+    </div>
+
+    <button id="startBtn">Начать игру</button>
+
+    <div class="rules">
+
+        <h3>🎮 Как играть</h3>
+
+        <p>⬆️ ⬇️ ⬅️ ➡️ — управление котом</p>
+        <p>🐟 Рыбка = +10 очков</p>
+        <p>🧶 Клубок = +5 очков</p>
+        <p>💣 Бомба = −1 жизнь</p>
+        <p>🏆 Пройди все 5 уровней!</p>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
